@@ -1,0 +1,27 @@
+---
+/** The requirements table (README "Requirements"), in a thin-bordered card. */
+import { copyFor } from '../../i18n';
+import { langOf } from '../../lib/site';
+
+const r = copyFor(langOf(Astro.url)).download.requirements;
+---
+
+<div class="table-card">
+  <table class="req">
+    <caption>{r.caption}</caption>
+    <thead>
+      <tr>{r.cols.map((c, i) => (i ? <th scope="col">{c}</th> : <td />))}</tr>
+    </thead>
+    <tbody>
+      {r.rows.map(([head, ...cells]) => (
+        <tr>
+          <th scope="row">{head}</th>
+          {cells.map((c) => (
+            <td>{c}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="req__note">{r.arm}</p>
+</div>

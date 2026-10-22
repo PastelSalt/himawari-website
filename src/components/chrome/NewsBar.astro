@@ -1,17 +1,19 @@
 ---
 /** The speech-bubble news bar (nanahira.jp's "hot topic"): the latest news post, with a bobbing white flower. */
 import Flower from '../ui/Flower.astro';
+import { copyFor } from '../../i18n';
+import { langOf } from '../../lib/site';
 interface Props {
-  label: string;
   post: { title: string; summary: string; href: string };
 }
-const { label, post } = Astro.props;
+const { post } = Astro.props;
+const c = copyFor(langOf(Astro.url)).chrome;
 ---
 
-<aside class="news" aria-label={label}>
+<aside class="news" aria-label={c.newsName}>
   <p class="news__bar">
     <span class="news__label" aria-hidden="true">
-      {label}
+      {c.newsLabel}
     </span>
     <span class="news__text">
       <a class="plain" href={post.href}>

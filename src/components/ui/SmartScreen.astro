@@ -1,0 +1,22 @@
+---
+/** The SmartScreen step and the installer's SHA-256. */
+import Icon from './Icon.astro';
+import { copyFor } from '../../i18n';
+import { RELEASE, langOf } from '../../lib/site';
+
+const d = copyFor(langOf(Astro.url)).download;
+---
+
+<div class="note-card">
+  <h4>
+    <Icon name="shield-check" duo />
+    {d.smartscreen.title}
+  </h4>
+  <p set:html={d.smartscreen.text} />
+  {RELEASE.installer.sha256 && (
+    <p class="sha">
+      <span class="sha__label">{d.sha}</span>
+      <code>{RELEASE.installer.sha256}</code>
+    </p>
+  )}
+</div>

@@ -2,23 +2,29 @@
 /** A grid of link cards with a duotone icon each (Learn, Get involved). The title is the link. */
 import Icon from '../ui/Icon.astro';
 import SectionTitle from '../ui/SectionTitle.astro';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
 interface Props {
   id: string;
-  title: string;
-  items: { icon: string; title: string; text: string; href: string }[];
+  section: {
+    title: string;
+    label: string;
+    items: { icon: string; title: string; text: string; href: string }[];
+  };
 }
-const { id, title, items } = Astro.props;
+const { id, section } = Astro.props;
+const lang = langOf(Astro.url);
 ---
 
 <section class="sec" id={id} aria-labelledby={`t-${id}`}>
-  <SectionTitle id={`t-${id}`} text={title} />
-  <ul class:list={['links', { 'links--pairs': items.length % 2 === 0 }]} role="list">
-    {items.map((it, i) => (
+  <SectionTitle id={`t-${id}`} text={section.title} label={section.label} />
+  <ul class:list={['links', { 'links--pairs': section.items.length % 2 === 0 }]} role="list">
+    {section.items.map((it, i) => (
       <li class="links__item reveal" style={`--d:${i % 3}`}>
         <Icon name={it.icon} duo class="links__icon" />
         <div>
           <h3>
-            <a href={it.href}>{it.title}</a>
+            <a href={it.href} set:html={phrase(it.title, lang)} />
           </h3>
           <p>{it.text}</p>
         </div>

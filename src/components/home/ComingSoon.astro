@@ -4,12 +4,12 @@
  * owner announces them. Flowers fall slowly behind it (CSS only, positions fixed at build so nothing shifts).
  */
 import Flower from '../ui/Flower.astro';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy['soon'];
-}
-const s = Astro.props.copy;
+const lang = langOf(Astro.url);
+const s = copyFor(lang).soon;
 const FALL = Array.from({ length: 14 }, (_, i) => ({
   white: i % 3 === 0,
   style: [
@@ -29,7 +29,9 @@ const FALL = Array.from({ length: 14 }, (_, i) => ({
       <Flower white={f.white} class="soon__flower" style={f.style} />
     ))}
   </div>
-  <p class="soon__pill">{s.pill}</p>
-  <h2 id="t-soon">{s.title}</h2>
+  <p class="soon__pill" lang="en">
+    {s.pill}
+  </p>
+  <h2 id="t-soon" set:html={phrase(s.title, lang)} />
   <p class="soon__text">{s.text}</p>
 </section>

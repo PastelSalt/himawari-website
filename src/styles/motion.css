@@ -68,3 +68,46 @@ html[data-motion='off'] *::after {
 [data-offscreen] :is(.bob, .drift, .sp__caret, .soon__flower) {
   animation-play-state: paused !important;
 }
+
+/* ---------- scripted motion (src/scripts/reveal.ts, hero.ts) ---------- */
+@keyframes pop {
+  0% {
+    transform: translateY(14px) scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes rise {
+  from {
+    transform: translateY(26px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+/* cards and feature rows rise into place, staggered by --d */
+html[data-motion='on'] [data-reveal]:not(.is-in) {
+  opacity: 0;
+}
+html[data-motion='on'] [data-reveal].is-in {
+  animation: rise var(--dur-3) var(--ease-rise) both;
+  animation-delay: calc(var(--d, 0) * 90ms);
+}
+/* section titles: the letters pop in one by one */
+html[data-motion='on'] .sec-title[data-pop]:not(.is-pop) .sec-title__l {
+  opacity: 0;
+}
+html[data-motion='on'] .sec-title.is-pop .sec-title__l {
+  animation: pop 520ms var(--ease-pop) both;
+  animation-delay: calc(var(--i) * 45ms);
+}
+
+/* 404: the flowers drift away */
+html[data-motion='on'] .lost .drift {
+  animation: float 7s var(--ease-float) infinite;
+}

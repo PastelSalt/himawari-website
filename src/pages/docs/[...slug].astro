@@ -1,0 +1,14 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import DocsPage from '../../components/pages/DocsPage.astro';
+import { docSlug, isJa } from '../../lib/docs';
+
+export async function getStaticPaths() {
+  return (await getCollection('docs'))
+    .filter((d) => !isJa(d))
+    .map((entry) => ({ params: { slug: docSlug(entry) }, props: { entry } }));
+}
+const { entry } = Astro.props as { entry: CollectionEntry<'docs'> };
+---
+
+<DocsPage entry={entry} />

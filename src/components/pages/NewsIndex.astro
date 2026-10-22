@@ -1,0 +1,17 @@
+---
+/** /news: every post, newest first. */
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import NewsRows from '../ui/NewsRows.astro';
+import { copyFor } from '../../i18n';
+import { newsPosts } from '../../lib/news';
+import { langOf } from '../../lib/site';
+
+const lang = langOf(Astro.url);
+const p = copyFor(lang).pages.news;
+const posts = newsPosts(await getCollection('news'), lang);
+---
+
+<Page title={p.title} description={p.description} alternate={{ en: '/news', ja: '/ja/news' }} lead={p.lead}>
+  <NewsRows posts={posts} level={2} />
+</Page>

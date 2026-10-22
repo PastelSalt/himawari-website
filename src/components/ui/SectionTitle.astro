@@ -1,23 +1,28 @@
 ---
 /**
  * The pill section title: one word in capitals inside a thin double-line pill, centered on a full-width rule.
- * Each letter is its own span so the letters can pop in; screen readers get the word once.
+ * Each letter is its own span so the letters can pop in. Screen readers hear `label` once (in the page's
+ * language), not the spelled-out capitals.
  */
 interface Props {
   id: string;
   text: string;
+  label?: string;
+  /** 1 for a page's own title; 0 when the page's heading is elsewhere and the pill is only decoration */
+  level?: 0 | 1 | 2;
 }
-const { id, text } = Astro.props;
+const { id, text, label = text, level = 2 } = Astro.props;
+const H = level ? (`h${level}` as 'h1' | 'h2') : 'p';
 const letters = [...text];
 ---
 
-<h2 class="sec-title" id={id}>
+<H class="sec-title" id={id} aria-hidden={level ? undefined : 'true'}>
   <span class="sec-title__pill">
-    <span class="sr-only">{text}</span>
+    <span class="sr-only">{label}</span>
     {letters.map((c, i) => (
       <span class="sec-title__l" style={`--i:${i}`} aria-hidden="true">
         {c === ' ' ? ' ' : c}
       </span>
     ))}
   </span>
-</h2>
+</H>

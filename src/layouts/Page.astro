@@ -1,0 +1,46 @@
+---
+/** A page other than home: the site chrome, the page's title as a pill on a rule, an optional lead, and content. */
+import Base from './Base.astro';
+import SectionTitle from '../components/ui/SectionTitle.astro';
+import { copyFor } from '../i18n';
+import { langOf } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  alternate: { en: string; ja: string };
+  lead?: string;
+  og?: string;
+  wide?: boolean;
+  /** the pill's text when it isn't the page title (docs: the page's own h1 is in its content) */
+  pill?: string;
+}
+const { title, description, alternate, lead, og, wide = false, pill } = Astro.props;
+const lang = langOf(Astro.url);
+const copy = copyFor(lang);
+---
+
+<Base
+  lang={lang}
+  title={`${title} · ${copy.meta.suffix}`}
+  description={description}
+  alternate={alternate}
+  og={og}
+>
+  <div class:list={['wrap', 'page', { 'page--narrow': !wide }]}>
+    <header class="page-head">
+      {pill ? (
+        <SectionTitle id="page-title" text={lang === 'en' ? pill.toUpperCase() : pill} level={0} />
+      ) : (
+        <SectionTitle
+          id="page-title"
+          text={lang === 'en' ? title.toUpperCase() : title}
+          label={title}
+          level={1}
+        />
+      )}
+      {lead && <p class="page-head__lead">{lead}</p>}
+    </header>
+    <slot />
+  </div>
+</Base>

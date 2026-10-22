@@ -1,0 +1,48 @@
+# Using Claude with a Himawari project (Mode A)
+
+AI is **optional** in Himawari: every part of making a game works without it, and nothing AI-related runs unless you ask. This page is for when you want help from Claude.
+
+Himawari works with the AI app you already use: **Claude Code** or the **Claude desktop app** connect to your project through **himawari-mcp**, an MCP server that ships with Himawari. You use your own Claude plan; Himawari runs no servers and sends nothing anywhere. Studio also has a built-in assistant panel (Mode B) that uses your own Anthropic API key: Settings → Built-in assistant.
+
+## What the AI can and can't do
+- **Can:** read your scenes and characters, write and edit scenes (edits are anchored on each line's ID, checked before anything is saved, and refused if they'd break the story), rename things safely, declare variables, translate lines (they land as "needs review" and follow your glossary), leave review notes on lines instead of rewriting them, play every path of your story headlessly to find dead ends and unreachable endings, and take a screenshot of any line to check how it looks.
+- **Can't:** create images, music, sound effects, voices, or video. Ever. Missing art shows as labeled placeholders until you add your own.
+- **You stay in control:** wide changes (like a rename across many files) ask you first, and building a game folder is off unless you allow it. Everything the AI writes is recorded in `.himawari/provenance.json`; `hwc report ai-content` summarizes it for store disclosure.
+
+## Set up
+You need a Himawari checkout with the tools built (`corepack pnpm install`, then `corepack pnpm build`) and, for playtests and screenshots, the runtime (`runtime/`, `cmake --preset win64-release`, `cmake --build --preset win64-release`).
+
+In your project folder, run:
+```bash
+hwc ai setup
+```
+It prints the exact command and config for this project and this computer.
+
+### Claude Code
+Either run the `claude mcp add himawari -- …` line that `hwc ai setup` printed, or let it write the project's `.mcp.json`:
+```bash
+hwc ai setup --write
+```
+Start `claude` in the project folder and approve the `himawari` server when asked. Commit `.mcp.json` only if everyone on your team keeps Himawari in the same place; the paths in it are absolute.
+
+### Claude desktop app
+Open **Settings → Developer → Edit Config**. In `claude_desktop_config.json`, add the `himawari-…` entry that `hwc ai setup` printed under `"mcpServers"` (keep any servers you already have), save, and restart the app. Use one entry per project.
+
+### Options
+Add these to the server's arguments if you need them:
+- `--allow-build`: lets the AI package a playable `build/windows/<Game>/` folder.
+- `--runtime C:\path\to\himawari.exe`: if the runtime isn't found automatically (or set `HIMAWARI_RUNTIME`).
+
+## Working with it
+- Tell the AI about your story in **`AGENTS.md`** at the project root (every template has one): tone, audience, style rules, and files it must not touch. It reads that file and each character's bible (including the "Must never" rules) before writing.
+- Good first requests: *"Read the project and summarize the story so far"*, *"Write a scene where Hana and Mio argue about the festival, with a choice that leads to two endings"*, *"Playtest every path and fix any dead ends"*, *"Translate chapter 1 into Japanese"*.
+- The server also offers ready-made prompts (in clients that show them): **write_scene**, **continuity_check** (leaves review notes), **branch_planner**, **translate_scene**, **sprite_direction**, **proofread**, **route_balance**, **playtest_report**. Studio's assistant has the same recipes as slash commands: type `/` in its box.
+- Review notes appear in Studio's **Notes** panel and on their lines in the Screenplay; resolve them there when you've dealt with them.
+- In clients that support **MCP Apps** (experimental), the story graph and line screenshots show as small views in the chat.
+- To translate a whole language at once, use **Translate with AI** in Studio's Localization view: it's much cheaper than translating line by line in chat (Claude Haiku 5.5 by default, with your API key).
+- **With Himawari Studio open**, the AI's changes don't land directly: each one appears in Studio's **AI Proposals** panel with a diff and the AI's one-line reason, and you accept or reject it (rejecting can tell the AI why). Accepted changes go into Studio's History, where any of them can be undone. Studio shows the exact setup command for the open project in Settings → Use your Claude app.
+- **Without Studio**, changes land in your files right away. Use git to review and undo.
+
+## Reference
+- Tools, resources, and prompts: DETAILED_PLAN.md §10.3–10.4.
+- What the AI is told: [`spec/agent-guide.md`](https://github.com/PastelSalt/himawari-c/blob/v0.4.1/spec/agent-guide.md) (Himawari's rules) and [`spec/llm-reference.md`](https://github.com/PastelSalt/himawari-c/blob/v0.4.1/spec/llm-reference.md) (the script language for models).

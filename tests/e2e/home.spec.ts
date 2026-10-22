@@ -58,3 +58,28 @@ test.describe('home', () => {
     expect(overflow).toBeLessThanOrEqual(1);
   });
 });
+
+test.describe('motion', () => {
+  test('the hero types the next line with Motion on, and holds still with it off', async ({
+    page,
+    errors,
+  }) => {
+    void errors;
+    await page.goto('/');
+    const typed = page.locator('[data-typed]');
+    const first = await typed.textContent();
+    await expect(typed).not.toHaveText(first!, { timeout: 6000 });
+    await page.getByRole('button', { name: /MOTION/ }).click();
+    await expect(typed).toHaveText(first!);
+  });
+
+  test('the Japanese home page says what Himawari is, in Japanese', async ({ page, errors }) => {
+    void errors;
+    await page.goto('/ja');
+    await expect(page.locator('h1')).toContainText('ゲームで遊べる');
+    await expect(page.getByRole('link', { name: 'Windows 版をダウンロード' }).first()).toHaveAttribute(
+      'href',
+      /Himawari-Studio-Setup-[\d.]+\.exe$/,
+    );
+  });
+});

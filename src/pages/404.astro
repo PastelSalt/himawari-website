@@ -1,0 +1,46 @@
+---
+/** The 404 page: flowers drifting off, and the way back, in both languages (one page serves every path). */
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import Flower from '../components/ui/Flower.astro';
+import { en } from '../i18n/en';
+import { ja } from '../i18n/ja';
+
+const DRIFT = [
+  { left: '8%', size: 44, white: false, delay: '0s' },
+  { left: '30%', size: 30, white: true, delay: '-2s' },
+  { left: '62%', size: 52, white: false, delay: '-4s' },
+  { left: '86%', size: 34, white: true, delay: '-1s' },
+];
+---
+
+<Base
+  lang="en"
+  title={`${en.pages.notFound.title} · Himawari`}
+  description={en.pages.notFound.text}
+  alternate={{ en: '/', ja: '/ja' }}
+  noindex
+>
+  <div class="wrap lost">
+    <div class="lost__flowers" aria-hidden="true">
+      {DRIFT.map((f) => (
+        <Flower
+          white={f.white}
+          class="drift"
+          style={`left:${f.left};width:${f.size}px;animation-delay:${f.delay}`}
+        />
+      ))}
+    </div>
+    <h1>{en.pages.notFound.title}</h1>
+    <p>{en.pages.notFound.text}</p>
+    <p lang="ja">{ja.pages.notFound.text}</p>
+    <p class="hero__actions">
+      <Button href="/" icon="arrow-right">
+        {en.pages.notFound.home}
+      </Button>
+      <Button href="/ja" variant="ghost" lang="ja">
+        {ja.pages.notFound.home}
+      </Button>
+    </p>
+  </div>
+</Base>

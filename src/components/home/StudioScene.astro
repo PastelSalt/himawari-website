@@ -1,20 +1,25 @@
 ---
 /**
  * The live Studio window (WEBSITE.md §5.4), in HTML and CSS: a screenplay row on one side, the game on the other.
- * Rendered with the first line finished, which is what Motion OFF shows. The typing island (W2) drives the
+ * Rendered with the first line finished, which is what Motion OFF shows; src/scripts/hero.ts drives the
  * data-* hooks. The whole window is one image to assistive technology, described by its label.
  */
 import Window from '../ui/Window.astro';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy['hero'];
-}
-const h = Astro.props.copy;
+const h = copyFor(langOf(Astro.url)).hero;
 const first = h.lines[0]!;
 ---
 
-<Window title={`Himawari Studio  ·  ${h.file}`} label={h.windowLabel} class="hero__win" data-studio>
+<Window
+  title={`Himawari Studio  ·  ${h.file}`}
+  label={h.windowLabel}
+  class="hero__win"
+  data-studio
+  data-lines={JSON.stringify(h.lines)}
+  data-speaker={h.speaker}
+>
   <div class="studio" aria-hidden="true">
     <div class="sp">
       <div class="sp__row">

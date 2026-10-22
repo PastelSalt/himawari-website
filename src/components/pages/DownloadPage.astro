@@ -1,0 +1,94 @@
+---
+/** /download (WEBSITE.md §4): the installer, the install steps, requirements, SmartScreen, the SHA-256, all versions. */
+import Page from '../../layouts/Page.astro';
+import Button from '../ui/Button.astro';
+import ReleaseMeta from '../ui/ReleaseMeta.astro';
+import Requirements from '../ui/Requirements.astro';
+import SmartScreen from '../ui/SmartScreen.astro';
+import { copyFor } from '../../i18n';
+import { postDate } from '../../lib/news';
+import { RELEASE, RELEASES_URL, langOf } from '../../lib/site';
+
+const lang = langOf(Astro.url);
+const copy = copyFor(lang);
+const p = copy.pages.download;
+const mb = (b: number) => `${Math.round(b / 1024 / 1024)} MB`;
+---
+
+<Page
+  title={p.title}
+  description={p.description}
+  alternate={{ en: '/download', ja: '/ja/download' }}
+  lead={p.lead}
+>
+  <div class="dl-hero">
+    <Button href={RELEASE.installer.url} icon="windows-logo" data-confetti aria-describedby="page-meta">
+      {copy.hero.download}
+    </Button>
+    <ReleaseMeta id="page-meta" />
+    <p class="dl__phone">{copy.download.phone}</p>
+  </div>
+
+  <section class="page-block" aria-labelledby="install">
+    <h2 id="install">{p.stepsTitle}</h2>
+    <ol class="steps">
+      {p.steps.map((s) => (
+        <li>
+          <span set:html={s.replace('{file}', RELEASE.installer.name)} />
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="page-block dl__side" aria-label={copy.download.requirements.caption}>
+    <Requirements />
+    <SmartScreen />
+  </section>
+
+  <section class="page-block" aria-labelledby="check">
+    <h2 id="check">{p.checkTitle}</h2>
+    <p>{p.checkText}</p>
+    <pre
+      class="cmd"
+      tabindex="0"
+    ><code>{`Get-FileHash .\\${RELEASE.installer.name} -Algorithm SHA256`}</code></pre>
+  </section>
+
+  <section class="page-block" aria-labelledby="update">
+    <h2 id="update">{p.updateTitle}</h2>
+    <p>{p.updateText}</p>
+  </section>
+
+  <section class="page-block" aria-labelledby="versions">
+    <h2 id="versions">{p.olderTitle}</h2>
+    <div class="table-card">
+      <table class="versions">
+        <thead>
+          <tr>
+            <th scope="col">{lang === 'ja' ? 'バージョン' : 'Version'}</th>
+            <th scope="col">{p.published}</th>
+            <th scope="col">{p.size}</th>
+            <th scope="col">{p.notes}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {RELEASE.history.map((v) => (
+            <tr>
+              <th scope="row">
+                <a href={v.url}>{v.version}</a>
+              </th>
+              <td>{postDate(new Date(v.publishedAt), lang, 'long')}</td>
+              <td>{mb(v.bytes)}</td>
+              <td>
+                <a href={v.notesUrl}>GitHub</a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="page-foot">
+      <a href={RELEASES_URL}>{copy.download.all}</a>
+    </p>
+  </section>
+</Page>

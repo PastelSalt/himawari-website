@@ -1,0 +1,72 @@
+---
+/** The home page (WEBSITE.md §5), in either language: one long page with anchored sections, in the mockup's order. */
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import NewsBar from '../chrome/NewsBar.astro';
+import Ornament from '../ui/Ornament.astro';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Features from './Features.astro';
+import ComingSoon from './ComingSoon.astro';
+import Download from './Download.astro';
+import LinkCards from './LinkCards.astro';
+import News from './News.astro';
+import Faq from './Faq.astro';
+import { copyFor } from '../../i18n';
+import { newsPosts } from '../../lib/news';
+import { PORTFOLIO, RELEASE, REPO, SITE_NAME, type Lang } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const copy = copyFor(lang);
+const posts = newsPosts(await getCollection('news'), lang);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Himawari Studio',
+  description: copy.meta.description,
+  inLanguage: lang,
+  applicationCategory: 'DesignApplication',
+  operatingSystem: 'Windows 10, Windows 11',
+  softwareVersion: RELEASE.version,
+  datePublished: RELEASE.publishedAt.slice(0, 10),
+  downloadUrl: RELEASE.installer.url,
+  fileSize: `${Math.round(RELEASE.installer.bytes / 1024 / 1024)}MB`,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  license: `${REPO}#licenses`,
+  author: { '@type': 'Organization', name: PORTFOLIO.name, url: PORTFOLIO.url },
+  isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: Astro.site?.href },
+};
+---
+
+<Base
+  lang={lang}
+  title={copy.meta.title}
+  description={copy.meta.description}
+  alternate={{ en: '/', ja: '/ja' }}
+  jsonLd={jsonLd}
+>
+  <div class="wrap">
+    {posts[0] && <NewsBar post={posts[0]} />}
+    <Hero />
+    <Ornament />
+    <About />
+    <Ornament white />
+    <Features />
+  </div>
+  <ComingSoon />
+  <div class="wrap">
+    <Download />
+    <Ornament />
+    <LinkCards id="learn" section={copy.learn} />
+    <Ornament white />
+    <News posts={posts} />
+    <Ornament />
+    <Faq />
+    <Ornament white />
+    <LinkCards id="involved" section={copy.involved} />
+  </div>
+</Base>

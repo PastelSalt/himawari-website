@@ -1,0 +1,19 @@
+---
+/** "0.4.1 · 22 October 2026 · 146 MB" under a download button; the dots are silent to screen readers. */
+import { RELEASE, installerSize, langOf, releaseDate } from '../../lib/site';
+interface Props {
+  id: string;
+}
+const lang = langOf(Astro.url);
+const parts = [RELEASE.version, releaseDate(lang), installerSize()];
+---
+
+<span class="hero__meta" id={Astro.props.id}>
+  {parts.map((p, i) => (
+    <>
+      {i > 0 && <span aria-hidden="true">&nbsp;·&nbsp;</span>}
+      {i > 0 && <span class="sr-only">, </span>}
+      {p}
+    </>
+  ))}
+</span>

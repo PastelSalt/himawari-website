@@ -10,5 +10,21 @@
     "bytes": 152875944,
     "sha256": "7d4db9da24b8d1c2b214d56f42ed5160d805f1cee6c14f34222ce79a46939b55",
     "downloads": 0
-  }
+  },
+  "history": [
+    {
+      "version": "0.4.1",
+      "publishedAt": "2026-10-22T04:47:38Z",
+      "notesUrl": "https://github.com/PastelSalt/himawari-c/releases/tag/v0.4.1",
+      "bytes": 152875944,
+      "url": "https://github.com/PastelSalt/himawari-c/releases/download/v0.4.1/Himawari-Studio-Setup-0.4.1.exe"
+    },
+    {
+      "version": "0.4.0",
+      "publishedAt": "2026-10-22T04:17:37Z",
+      "notesUrl": "https://github.com/PastelSalt/himawari-c/releases/tag/v0.4.0",
+      "bytes": 152875846,
+      "url": "https://github.com/PastelSalt/himawari-c/releases/download/v0.4.0/Himawari-Studio-Setup-0.4.0.exe"
+    }
+  ]
 }

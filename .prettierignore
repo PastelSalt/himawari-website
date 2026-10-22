@@ -11,3 +11,5 @@ scripts/dev
 # rewritten by scripts/sync-release.ts and scripts/csp-hash.ts on every build
 src/data/release.json
 vercel.json
+# copied from the engine release by scripts/sync-release.ts
+src/content/docs

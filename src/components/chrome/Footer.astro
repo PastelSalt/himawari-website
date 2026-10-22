@@ -3,13 +3,10 @@
 import { Image } from 'astro:assets';
 import flowers from '../../assets/brand/flowers.png';
 import moekoWorks from '../../assets/brand/moeko-works.png';
-import { PORTFOLIO } from '../../lib/site';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { PORTFOLIO, langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy;
-}
-const f = Astro.props.copy.chrome.footer;
+const f = copyFor(langOf(Astro.url)).chrome.footer;
 ---
 
 <footer class="foot-zone">
@@ -25,13 +22,13 @@ const f = Astro.props.copy.chrome.footer;
       <ul class="foot__links" role="list">
         {f.links.map((l) => (
           <li>
-            <a class="plain" href={l.href}>
+            <a class="plain" href={l.href} lang="en">
               {l.label}
             </a>
           </li>
         ))}
       </ul>
-      <p>{f.legal}</p>
+      <p lang="en">{f.legal}</p>
     </div>
   </div>
 </footer>

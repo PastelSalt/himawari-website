@@ -46,6 +46,7 @@ for (const html of pages(DIST)) {
     '/' +
     html
       .slice(DIST.length + 1)
+      .replace(/\\/g, '/') // Windows paths
       .replace(/(index)?\.html$/, '')
       .replace(/\/$/, '');
   if (SKIP.some((s) => route.startsWith(s))) continue;

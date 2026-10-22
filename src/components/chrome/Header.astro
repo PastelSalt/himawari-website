@@ -2,22 +2,22 @@
 /**
  * The header (logo, language, Motion, GitHub, contact) and the sticky navigation row: "HIMAWARI", a thin rule,
  * and the home page's sections. On phones the links fold into the yellow menu button, a popover that needs no
- * script to open or close.
+ * script to open or close. Labels in capitals are English in both languages, as on nanahira.jp.
  */
 import { Image } from 'astro:assets';
 import Icon from '../ui/Icon.astro';
 import logo from '../../assets/brand/himawari-studio.png';
-import { CONTACT_URL, REPO, type Lang } from '../../lib/site';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { CONTACT_URL, REPO, langOf, path } from '../../lib/site';
 
 interface Props {
-  lang: Lang;
-  copy: Copy;
   alternate: { en: string; ja: string };
 }
-const { lang, copy, alternate } = Astro.props;
-const c = copy.chrome;
-const home = lang === 'ja' ? '/ja' : '/';
+const { alternate } = Astro.props;
+const lang = langOf(Astro.url);
+const c = copyFor(lang).chrome;
+const home = path('/', lang);
+const other = lang === 'en' ? 'ja' : 'en';
 // on the home page the links are plain anchors; elsewhere they go back to the home page's sections
 const isHome = Astro.url.pathname.replace(/\/+$/, '') === home.replace(/\/$/, '');
 const href = (id: string) => (isHome ? `#${id}` : `${home === '/' ? '' : home}/#${id}`);
@@ -54,6 +54,7 @@ const href = (id: string) => (isHome ? `#${id}` : `${home === '/' ? '' : home}/#
         data-motion-toggle
         data-on={c.motionOn}
         data-off={c.motionOff}
+        lang="en"
       >
         <Icon name="sparkle" />
         <span class="motion__text" data-motion-text>
@@ -72,14 +73,14 @@ const href = (id: string) => (isHome ? `#${id}` : `${home === '/' ? '' : home}/#
 
 <nav class="nav" aria-label={c.navLabel}>
   <div class="wrap nav__row">
-    <a class="nav__name plain" href={isHome ? '#main' : home}>
+    <a class="nav__name plain" href={isHome ? '#main' : home} lang="en">
       HIMAWARI
     </a>
     <span class="nav__rule" aria-hidden="true"></span>
     <ul class="nav__links" role="list">
       {c.nav.map((n) => (
         <li>
-          <a class="plain" href={href(n.id)}>
+          <a class="plain" href={href(n.id)} lang="en">
             {n.label}
           </a>
         </li>
@@ -99,20 +100,15 @@ const href = (id: string) => (isHome ? `#${id}` : `${home === '/' ? '' : home}/#
     {c.nav.map((n) => (
       <li>
         <a class="plain" href={href(n.id)} data-menu-link>
-          {n.label}
+          <span lang="en">{n.label}</span>
+          {lang === 'ja' && <small>{n.name}</small>}
         </a>
       </li>
     ))}
   </ul>
   <p class="menu-panel__lang">
-    {lang === 'en' ? (
-      <a class="plain" href={alternate.ja} hreflang="ja" lang="ja">
-        日本語
-      </a>
-    ) : (
-      <a class="plain" href={alternate.en} hreflang="en" lang="en">
-        English
-      </a>
-    )}
+    <a class="plain" href={alternate[other]} hreflang={other} lang={other}>
+      {c.langOther}
+    </a>
   </p>
 </div>

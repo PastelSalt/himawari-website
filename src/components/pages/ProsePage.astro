@@ -1,0 +1,28 @@
+---
+/** /privacy and /about: Markdown from src/content/pages/<lang>/<page>.md. */
+import { getEntry, render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { copyFor } from '../../i18n';
+import { postDate } from '../../lib/news';
+import { langOf } from '../../lib/site';
+
+interface Props {
+  page: 'privacy' | 'about';
+}
+const { page } = Astro.props;
+const lang = langOf(Astro.url);
+const p = copyFor(lang).pages[page];
+const entry = await getEntry('pages', `${lang}/${page}`);
+if (!entry) throw new Error(`missing src/content/pages/${lang}/${page}.md`);
+const { Content } = await render(entry);
+---
+
+<Page title={p.title} description={p.description} alternate={{ en: `/${page}`, ja: `/ja/${page}` }}>
+  <div class="prose">
+    <Content />
+  </div>
+  <p class="updated">
+    {lang === 'ja' ? '最終更新：' : 'Last updated '}
+    {postDate(entry.data.updated, lang, 'long')}
+  </p>
+</Page>

@@ -24,6 +24,8 @@ export default defineConfig({
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   security: { checkOrigin: true },
   image: { responsiveStyles: true },
+  // docs code blocks stay plain: ink on white passes contrast; the default dark theme's colors don't
+  markdown: { syntaxHighlight: false },
   // Fredoka is inlined + preloaded by <Font>. Zen Maru Gothic ships ~120 unicode-range slices per weight, so its
   // @font-face CSS is served once from /fonts/jp.css (cached, loaded without blocking render) instead of being
   // inlined into every page. Weights are trimmed to what the design uses.
@@ -46,7 +48,6 @@ export default defineConfig({
     schema: {
       DATABASE_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
       DATABASE_URL_UNPOOLED: envField.string({ context: 'server', access: 'secret', optional: true }),
-      IP_HASH_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
       CRON_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
       DISCORD_WEBHOOK_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
     },

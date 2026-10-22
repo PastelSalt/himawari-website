@@ -1,6 +1,8 @@
 ---
 /** A feature row: a kicker with an icon, a heading, a short paragraph, a list with yellow markers, and a visual. */
 import Icon from '../ui/Icon.astro';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
 interface Props {
   icon: string;
   kicker: string;
@@ -20,7 +22,7 @@ const { icon, kicker, title, text, list, flip = false } = Astro.props;
       <Icon name={icon} duo />
       {kicker}
     </p>
-    <h3>{title}</h3>
+    <h3 set:html={phrase(title, langOf(Astro.url))} />
     <p set:html={text} />
     <ul>
       {list.map((li) => (

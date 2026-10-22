@@ -2,21 +2,21 @@
 /** The three promises, as three cards with thin borders and a duotone icon each. */
 import Icon from '../ui/Icon.astro';
 import SectionTitle from '../ui/SectionTitle.astro';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy['about'];
-}
-const a = Astro.props.copy;
+const lang = langOf(Astro.url);
+const a = copyFor(lang).about;
 ---
 
 <section class="sec" id="about" aria-labelledby="t-about">
-  <SectionTitle id="t-about" text={a.title} />
+  <SectionTitle id="t-about" text={a.title} label={a.label} />
   <ul class="cards" role="list">
     {a.cards.map((c, i) => (
       <li class="card reveal" style={`--d:${i}`}>
         <Icon name={c.icon} duo class="card__icon" />
-        <h3>{c.title}</h3>
+        <h3 set:html={phrase(c.title, lang)} />
         <p>{c.text}</p>
       </li>
     ))}

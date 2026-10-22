@@ -2,16 +2,14 @@
 /** The README's questions, as native <details>: no script, and they open with the keyboard. */
 import Icon from '../ui/Icon.astro';
 import SectionTitle from '../ui/SectionTitle.astro';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy['faq'];
-}
-const f = Astro.props.copy;
+const f = copyFor(langOf(Astro.url)).faq;
 ---
 
 <section class="sec" id="faq" aria-labelledby="t-faq">
-  <SectionTitle id="t-faq" text={f.title} />
+  <SectionTitle id="t-faq" text={f.title} label={f.label} />
   <div class="faq">
     {f.items.map((it) => (
       <details class="faq__item">

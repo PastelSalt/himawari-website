@@ -1,0 +1,41 @@
+---
+/** News posts as rows: an icon tile, the title, "date | category", and one line. */
+import Icon from './Icon.astro';
+import { postDate, type Post } from '../../lib/news';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
+
+interface Props {
+  posts: Post[];
+  level?: 2 | 3;
+}
+const { posts, level = 3 } = Astro.props;
+const H = `h${level}` as 'h2' | 'h3';
+const lang = langOf(Astro.url);
+const CATEGORY = {
+  en: { Release: 'Release', Announcement: 'Announcement' },
+  ja: { Release: 'リリース', Announcement: 'お知らせ' },
+};
+---
+
+<ul class="news-list" role="list">
+  {posts.map((p) => (
+    <li class="news-row reveal">
+      <span class="news-row__thumb" aria-hidden="true">
+        <Icon name="newspaper" duo />
+      </span>
+      <div>
+        <H>
+          <a href={p.href} set:html={phrase(p.title, lang)} />
+        </H>
+        <p class="news-row__meta">
+          <time datetime={p.date.toISOString()}>{postDate(p.date, lang)}</time>
+          <span aria-hidden="true"> | </span>
+          <span class="sr-only">, </span>
+          {CATEGORY[lang][p.category]}
+        </p>
+        <p>{p.summary}</p>
+      </div>
+    </li>
+  ))}
+</ul>

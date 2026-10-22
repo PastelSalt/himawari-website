@@ -12,19 +12,30 @@ import '../styles/motion.css';
 import Sprite from '../components/chrome/Sprite.astro';
 import Header from '../components/chrome/Header.astro';
 import Footer from '../components/chrome/Footer.astro';
+import { copyFor } from '../i18n';
 import { SITE_NAME, type Lang } from '../lib/site';
-import type { Copy } from '../i18n/en';
 
 export interface Props {
   lang: Lang;
-  copy: Copy;
   title: string;
   description: string;
   /** the same page in the other language, for hreflang and the language switch */
   alternate: { en: string; ja: string };
   jsonLd?: Record<string, unknown>;
+  /** a share image under /og/ (scripts/make-og.ts); defaults to the language's own */
+  og?: string;
+  noindex?: boolean;
 }
-const { lang, copy, title, description, alternate, jsonLd } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  alternate,
+  jsonLd,
+  og = `/og/home-${lang}.png`,
+  noindex = false,
+} = Astro.props;
+const copy = copyFor(lang);
 const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.site);
 ---
 
@@ -36,6 +47,10 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" hreflang="en" href={new URL(alternate.en, Astro.site).href} />
     <link rel="alternate" hreflang="ja" href={new URL(alternate.ja, Astro.site).href} />
     <link rel="alternate" hreflang="x-default" href={new URL(alternate.en, Astro.site).href} />
@@ -46,6 +61,9 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:locale" content={lang === 'ja' ? 'ja_JP' : 'en_US'} />
+    <meta property="og:image" content={new URL(og, Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
     <!-- Pre-paint Motion (WEBSITE.md §7.1): the saved choice, else prefers-reduced-motion. Its sha256 goes in the
@@ -73,11 +91,11 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
       {copy.chrome.skip}
     </a>
     <Sprite />
-    <Header lang={lang} copy={copy} alternate={alternate} />
+    <Header alternate={alternate} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <Footer copy={copy} />
+    <Footer />
     <script>
       import '../scripts/global';
     </script>

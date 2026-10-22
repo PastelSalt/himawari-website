@@ -1,0 +1,45 @@
+---
+/** /news/<post>: one post. */
+import { render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { copyFor } from '../../i18n';
+import { postDate, type Post } from '../../lib/news';
+import { phrase } from '../../lib/phrase';
+import { langOf, path } from '../../lib/site';
+
+interface Props {
+  post: Post;
+}
+const { post } = Astro.props;
+const lang = langOf(Astro.url);
+const p = copyFor(lang).pages.news;
+const { Content } = await render(post.entry);
+const CATEGORY = {
+  en: { Release: 'Release', Announcement: 'Announcement' },
+  ja: { Release: 'リリース', Announcement: 'お知らせ' },
+};
+---
+
+<Page
+  title={post.title}
+  description={post.summary}
+  alternate={{ en: `/news/${post.slug}`, ja: `/ja/news/${post.slug}` }}
+  pill={p.title}
+>
+  <article>
+    <h1 class="post-title" set:html={phrase(post.title, lang)} />
+    <p class="post-meta">
+      <time datetime={post.date.toISOString()}>{postDate(post.date, lang, 'long')}</time>
+      <span aria-hidden="true"> | </span>
+      <span class="sr-only">, </span>
+      {CATEGORY[lang][post.category]}
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+    <p class="page-foot">
+      <a href={path('/news', lang)}>{p.back}</a>
+      {post.link && <a href={post.link}>{p.github}</a>}
+    </p>
+  </article>
+</Page>

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "tsx scripts/sync-release.ts && astro check && astro build && tsx scripts/csp-hash.ts",
+    "build": "tsx scripts/sync-release.ts && tsx scripts/migrate.ts && astro check && astro build && tsx scripts/csp-hash.ts",
     "preview": "node scripts/dev/serve-dist.mjs 4321",
     "release": "tsx scripts/sync-release.ts",
     "lint": "eslint . && prettier --check .",
@@ -17,21 +17,31 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "contrast": "tsx scripts/contrast-check.ts",
-    "budget": "tsx scripts/check-budget.ts"
+    "budget": "tsx scripts/check-budget.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "og": "tsx scripts/make-og.ts"
   },
   "dependencies": {
     "@astrojs/preact": "6.0.6",
     "@astrojs/sitemap": "3.7.4",
     "@astrojs/vercel": "11.0.13",
+    "@neondatabase/serverless": "1.2.0",
     "@phosphor-icons/core": "2.1.1",
     "astro": "7.3.8",
+    "budoux": "0.9.3",
+    "canvas-confetti": "1.9.4",
+    "drizzle-orm": "0.45.4",
     "preact": "10.29.8",
     "sharp": "0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@axe-core/playwright": "4.13.0",
+    "@electric-sql/pglite": "0.5.8",
     "@playwright/test": "1.64.0",
+    "@types/canvas-confetti": "1.9.0",
+    "drizzle-kit": "0.31.11",
     "eslint": "10.12.0",
     "eslint-plugin-astro": "3.2.1",
     "playwright-core": "1.64.0",

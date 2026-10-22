@@ -155,3 +155,8 @@ a.plain {
   --ph-fill: var(--sun);
   --ph-op: 1;
 }
+
+/* a BudouX phrase in a Japanese heading (src/lib/phrase.ts): lines break between phrases, not inside them */
+.ph {
+  white-space: nowrap;
+}

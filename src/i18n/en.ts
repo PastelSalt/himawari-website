@@ -1,9 +1,10 @@
 /**
- * English copy for the home page and the site chrome. The README is the source for every claim
- * (WEBSITE.md §8): say less than it does, and link to it or the docs. No emoji, nothing that isn't true today.
+ * English copy for the site. The README is the source for every claim (WEBSITE.md §8): say less than it does,
+ * and link to it or the docs. No emoji, nothing that isn't true today.
  *
  * Strings marked "html" may hold <mark>, <b>, <code>, and <a>; they're ours, so they're rendered as HTML.
- * The Japanese copy (W3) has the same shape.
+ * The Japanese copy (ja.ts) has the same shape. Section pills stay in English capitals in both languages, as on
+ * nanahira.jp; `label` is what screen readers hear.
  */
 import { CONTACT_URL, REPO, atTag } from '../lib/site';
 
@@ -12,11 +13,13 @@ export const en = {
     title: 'Himawari: a free visual novel maker for Windows',
     description:
       'Himawari Studio is a free, open-source visual novel engine and editor for Windows. Write your story, watch it play as you type, and export a small game that runs on any Windows PC.',
+    suffix: 'Himawari',
   },
   chrome: {
     skip: 'Skip to content',
     logoAlt: 'Himawari Studio: Visual Novel Engine and Maker by Moeko Works',
     langLabel: 'Language',
+    langOther: '日本語',
     motionOn: 'MOTION ON',
     motionOff: 'MOTION OFF',
     github: 'Himawari on GitHub',
@@ -25,13 +28,14 @@ export const en = {
     menu: 'Menu',
     close: 'Close the menu',
     nav: [
-      { id: 'features', label: 'FEATURES' },
-      { id: 'download', label: 'DOWNLOAD' },
-      { id: 'learn', label: 'LEARN' },
-      { id: 'news', label: 'NEWS' },
-      { id: 'faq', label: 'FAQ' },
+      { id: 'features', label: 'FEATURES', name: 'Features' },
+      { id: 'download', label: 'DOWNLOAD', name: 'Download' },
+      { id: 'learn', label: 'LEARN', name: 'Learn' },
+      { id: 'news', label: 'NEWS', name: 'News' },
+      { id: 'faq', label: 'FAQ', name: 'FAQ' },
     ],
     newsLabel: 'NEWS',
+    newsName: 'Latest news',
     footer: {
       links: [
         { label: 'PRIVACY', href: '/privacy' },
@@ -41,6 +45,7 @@ export const en = {
       legal: 'COPYRIGHT © MOEKO WORKS · RUNTIME ZLIB · TOOLS MIT',
       madeBy: 'Made by Moeko Works',
     },
+    english: '(in English)',
   },
   hero: {
     /** html */
@@ -48,6 +53,7 @@ export const en = {
     lead: 'A free visual novel maker for Windows. No code needed, and nothing for your players to install.',
     download: 'Download for Windows',
     firstGame: 'Make your first game',
+    firstGameHref: '/docs/tutorials/first-game',
     note: 'THE GAME PLAYS BESIDE THE EDITOR, IN UNDER A SECOND',
     windowLabel:
       'An illustration of Himawari Studio: a line typed in the editor appears in the game beside it',
@@ -64,6 +70,7 @@ export const en = {
   },
   about: {
     title: 'ABOUT',
+    label: 'About',
     cards: [
       {
         icon: 'pencil-simple-line',
@@ -84,6 +91,7 @@ export const en = {
   },
   features: {
     title: 'FEATURES',
+    label: 'Features',
     writers: {
       kicker: 'FOR WRITERS',
       title: 'Each line of your story is a row.',
@@ -144,8 +152,8 @@ export const en = {
   },
   download: {
     title: 'DOWNLOAD',
+    label: 'Download',
     heading: 'Himawari Studio for Windows',
-    /** html */
     intro:
       'Everything is inside the installer: the editor, the game engine, the command-line tools, the tutorial, and three sample games. You don’t need anything else.',
     phone: 'Himawari runs on Windows PCs. Open this page on your computer to download it.',
@@ -163,6 +171,7 @@ export const en = {
         ['Memory', '4 GB or more', 'Under 150 MB for a typical 1080p scene'],
         ['Anything else to install', 'No', 'No'],
       ],
+      arm: 'Arm PCs running Windows 11 should work through its x64 emulation, but that hasn’t been tested yet.',
     },
     smartscreen: {
       title: 'If Windows warns you',
@@ -172,27 +181,29 @@ export const en = {
     sha: 'SHA-256 of the installer',
     notes: 'Release notes',
     all: 'All releases',
+    more: 'Install steps and older versions',
   },
   learn: {
     title: 'LEARN',
+    label: 'Learn',
     items: [
       {
         icon: 'graduation-cap',
         title: 'Make your first game',
         text: 'A guided tutorial that builds a short game from an empty project.',
-        href: atTag('docs/tutorials/first-game.md'),
+        href: '/docs/tutorials/first-game',
       },
       {
         icon: 'book-open',
         title: 'Documentation',
         text: 'How-to guides and reference: export a game, add a language, credit Himawari.',
-        href: atTag('docs/index.md'),
+        href: '/docs',
       },
       {
         icon: 'sparkle',
         title: 'Working with AI',
         text: 'Set up the built-in assistant or Claude Code, or leave AI off.',
-        href: atTag('docs/ai-setup.md'),
+        href: '/docs/ai-setup',
       },
       {
         icon: 'file-code',
@@ -210,10 +221,12 @@ export const en = {
   },
   news: {
     title: 'NEWS',
+    label: 'News',
     all: 'All news',
   },
   faq: {
     title: 'FAQ',
+    label: 'Questions people ask',
     /** html answers */
     items: [
       {
@@ -226,15 +239,15 @@ export const en = {
       },
       {
         q: 'Is it free? Can I sell my game?',
-        a: `Yes to both. Himawari is free and open source, and you can sell games made with it. The engine inside your game uses the zlib license, which doesn’t require crediting Himawari, though it’s appreciated (<a href="${atTag('docs/how-to/credit-himawari.md')}">how to credit Himawari</a>). Your story and art stay entirely yours.`,
+        a: 'Yes to both. Himawari is free and open source, and you can sell games made with it. The engine inside your game uses the zlib license, which doesn’t require crediting Himawari, though it’s appreciated (<a href="/docs/how-to/credit-himawari">how to credit Himawari</a>). Your story and art stay entirely yours.',
       },
       {
         q: 'Do I have to use AI?',
-        a: `No. AI is off until you turn it on, and every feature can be done by hand. See <a href="${atTag('docs/explanation/ai-is-optional.md')}">AI is optional</a>.`,
+        a: 'No. AI is off until you turn it on, and every feature can be done by hand. See <a href="/docs/explanation/ai-is-optional">AI is optional</a>.',
       },
       {
         q: 'Does Himawari send my work anywhere?',
-        a: `No. Studio and games have no servers, accounts, telemetry, or analytics. Text leaves your PC only if you turn on AI help and use it. See <a href="${atTag('PRIVACY.md')}">the privacy notes</a>.`,
+        a: 'No. Studio and games have no servers, accounts, telemetry, or analytics. Text leaves your PC only if you turn on AI help and use it. See <a href="/privacy">Privacy</a>.',
       },
       {
         q: 'How does it compare to Ren’Py?',
@@ -248,6 +261,7 @@ export const en = {
   },
   involved: {
     title: 'GET INVOLVED',
+    label: 'Get involved',
     items: [
       {
         icon: 'chat-circle-text',
@@ -274,6 +288,62 @@ export const en = {
         href: atTag('SECURITY.md'),
       },
     ],
+  },
+
+  /* ------------------------------------------------------------------ other pages */
+  pages: {
+    download: {
+      title: 'Download',
+      description:
+        'Download Himawari Studio for Windows 10 and 11: the installer, requirements, the SmartScreen step, and its SHA-256.',
+      lead: 'Himawari Studio for Windows 10 and 11, 64-bit. One installer holds the editor, the game engine, the command-line tools, the tutorial, and three sample games.',
+      stepsTitle: 'Install',
+      /** html */
+      steps: [
+        'Download <b>{file}</b>.',
+        'Run it. Install for yourself only (no administrator rights needed) or for everyone on the PC.',
+        'Studio opens when setup finishes. Choose <b>Open Tutorial Project</b> for a guided first game, or <b>New Project</b> to start your own.',
+      ],
+      checkTitle: 'Check the file',
+      checkText:
+        'In PowerShell, in the folder you downloaded to, this prints the file’s SHA-256. It should match the one above.',
+      updateTitle: 'Updating',
+      updateText:
+        'Studio doesn’t update itself yet. To update, download the new installer and run it: installing over an older version keeps your projects and settings.',
+      olderTitle: 'All versions',
+      published: 'Published',
+      size: 'Size',
+      notes: 'Notes',
+    },
+    news: {
+      title: 'News',
+      description: 'Releases and announcements for Himawari, the visual novel engine by Moeko Works.',
+      lead: 'Releases and announcements.',
+      back: 'All news',
+      github: 'The release on GitHub',
+    },
+    privacy: {
+      title: 'Privacy',
+      description:
+        'What this website counts and how, without cookies, and what Himawari itself sends: nothing.',
+    },
+    about: {
+      title: 'About',
+      description: 'Who makes Himawari, how the project is run, and its licenses.',
+    },
+    docs: {
+      title: 'Documentation',
+      description: 'Himawari’s documentation: tutorials, how-to guides, reference, and explanations.',
+      source: 'This page on GitHub',
+      version: 'For Himawari {version}',
+      contents: 'Documentation',
+    },
+    notFound: {
+      title: 'Page not found',
+      text: 'This page drifted away. It may have moved, or the address may be mistyped.',
+      home: 'Back to the home page',
+      docs: 'Documentation',
+    },
   },
 };
 

@@ -3,6 +3,12 @@
   "regions": [
     "sin1"
   ],
+  "crons": [
+    {
+      "path": "/api/cron/daily",
+      "schedule": "30 16 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -29,7 +35,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-89+S7SQ1Xl6E9Mlu2bi5KqslxhQ3kyt2rPk2JHs6kh8=' 'sha256-AmLj6+iN7KNg2kWx0VNpVRn5oZA14uZLyxf1ELi4U84='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-89+S7SQ1Xl6E9Mlu2bi5KqslxhQ3kyt2rPk2JHs6kh8=' 'sha256-hd3TqnfSvgFoEML+e3upBvvyae60h63X1lNkYJsiOSI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         }
       ]
     },
@@ -48,6 +54,19 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
         }
       ]
     }

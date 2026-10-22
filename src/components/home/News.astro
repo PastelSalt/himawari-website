@@ -1,50 +1,23 @@
 ---
 /** The latest three news posts as rows (nanahira.jp's news list), then a wide pale-yellow "All news" button. */
 import Button from '../ui/Button.astro';
-import Icon from '../ui/Icon.astro';
 import SectionTitle from '../ui/SectionTitle.astro';
-import type { Lang } from '../../lib/site';
-import type { Copy } from '../../i18n/en';
+import NewsRows from '../ui/NewsRows.astro';
+import { copyFor } from '../../i18n';
+import type { Post } from '../../lib/news';
+import { langOf, path } from '../../lib/site';
 
 interface Props {
-  lang: Lang;
-  copy: Copy['news'];
-  posts: { title: string; date: Date; category: string; summary: string; href: string }[];
+  posts: Post[];
 }
-const { lang, copy: n, posts } = Astro.props;
-const fmt = (d: Date) =>
-  d.toLocaleDateString(lang === 'ja' ? 'ja-JP' : 'en-GB', {
-    timeZone: 'Asia/Tokyo',
-    year: 'numeric',
-    month: lang === 'ja' ? 'long' : 'short',
-    day: 'numeric',
-  });
+const lang = langOf(Astro.url);
+const n = copyFor(lang).news;
 ---
 
 <section class="sec" id="news" aria-labelledby="t-news">
-  <SectionTitle id="t-news" text={n.title} />
-  <ul class="news-list" role="list">
-    {posts.slice(0, 3).map((p) => (
-      <li class="news-row reveal">
-        <span class="news-row__thumb" aria-hidden="true">
-          <Icon name="newspaper" duo />
-        </span>
-        <div>
-          <h3>
-            <a href={p.href}>{p.title}</a>
-          </h3>
-          <p class="news-row__meta">
-            <time datetime={p.date.toISOString()}>{fmt(p.date)}</time>
-            <span aria-hidden="true"> | </span>
-            <span class="sr-only">, </span>
-            {p.category}
-          </p>
-          <p>{p.summary}</p>
-        </div>
-      </li>
-    ))}
-  </ul>
-  <Button variant="wide" href={lang === 'ja' ? '/ja/news' : '/news'}>
+  <SectionTitle id="t-news" text={n.title} label={n.label} />
+  <NewsRows posts={Astro.props.posts.slice(0, 3)} />
+  <Button variant="wide" href={path('/news', lang)}>
     {n.all}
   </Button>
 </section>

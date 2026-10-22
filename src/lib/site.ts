@@ -13,18 +13,23 @@ export const atTag = (path: string) => `${REPO}/blob/${release.tag}/${path}`;
 
 export type Lang = 'en' | 'ja';
 
-/** "22 October 2026" / "2026年10月22日", in Japan time (the owner's releases and readers are in Asia). */
+/** The page's language, from its path: /ja and everything under it is Japanese. */
+export const langOf = (url: URL): Lang => (/^\/ja(\/|$)/.test(url.pathname) ? 'ja' : 'en');
+/** A site path in a language: path('/download', 'ja') is /ja/download. */
+export const path = (p: string, lang: Lang) => (lang === 'ja' ? (p === '/' ? '/ja' : `/ja${p}`) : p);
+
+/** "22 October 2026" / "2026年10月22日", in Moeko Works' time zone (Manila), as on the portfolio. */
 export function releaseDate(lang: Lang): string {
   const d = new Date(release.publishedAt);
   return lang === 'ja'
     ? d.toLocaleDateString('ja-JP', {
-        timeZone: 'Asia/Tokyo',
+        timeZone: 'Asia/Manila',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       })
     : d.toLocaleDateString('en-GB', {
-        timeZone: 'Asia/Tokyo',
+        timeZone: 'Asia/Manila',
         year: 'numeric',
         month: 'long',
         day: 'numeric',

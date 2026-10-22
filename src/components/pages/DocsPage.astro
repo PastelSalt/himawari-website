@@ -1,0 +1,62 @@
+---
+/** /docs/… and /ja/docs/…: one page of the engine's docs at the released version, with the docs listed beside it. */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { copyFor } from '../../i18n';
+import { docGroups, docHref, docRepoPath, docTitle, isJa } from '../../lib/docs';
+import { RELEASE, atTag, langOf } from '../../lib/site';
+
+interface Props {
+  entry: CollectionEntry<'docs'>;
+}
+const { entry } = Astro.props;
+const lang = langOf(Astro.url);
+const copy = copyFor(lang);
+const d = copy.pages.docs;
+const all = await getCollection('docs');
+const { Content } = await render(entry);
+const here = docHref(entry);
+
+// the same page in the other language when it exists, else that language's docs home
+const twinId = isJa(entry) ? entry.id.replace(/^ja\//, '') : `ja/${entry.id}`;
+const twin = all.find((x) => x.id === twinId);
+const alternate = {
+  en: isJa(entry) ? (twin ? docHref(twin) : '/docs') : here,
+  ja: isJa(entry) ? here : twin ? docHref(twin) : '/ja/docs',
+};
+const title = docTitle(entry);
+---
+
+<Page title={title} description={d.description} alternate={alternate} pill={d.title} wide>
+  <div class="docs">
+    <nav class="docs__nav" aria-label={d.contents}>
+      {docGroups(all, lang).map((g) => (
+        <>
+          <h2>{g.label}</h2>
+          <ul role="list">
+            {g.items.map((it) => (
+              <li>
+                <a
+                  href={it.href}
+                  aria-current={it.href === here ? 'page' : undefined}
+                  lang={g.english ? 'en' : undefined}
+                >
+                  {it.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </nav>
+    <article>
+      <p class="docs__meta">
+        <span>{d.version.replace('{version}', RELEASE.version)}</span>
+        <a href={atTag(docRepoPath(entry))}>{d.source}</a>
+      </p>
+      <div class="prose" lang={isJa(entry) ? 'ja' : 'en'}>
+        <Content />
+      </div>
+    </article>
+  </div>
+</Page>

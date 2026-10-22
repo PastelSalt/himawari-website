@@ -10,12 +10,12 @@ import Window from '../ui/Window.astro';
 import FeatureRow from './FeatureRow.astro';
 import studio from '../../assets/shots/studio.png';
 import uiDesigner from '../../assets/shots/ui-designer.png';
-import type { Copy } from '../../i18n/en';
+import { copyFor } from '../../i18n';
+import { phrase } from '../../lib/phrase';
+import { langOf } from '../../lib/site';
 
-interface Props {
-  copy: Copy['features'];
-}
-const f = Astro.props.copy;
+const lang = langOf(Astro.url);
+const f = copyFor(lang).features;
 const shot = { widths: [560, 840, 1120], sizes: '(max-width: 760px) calc(100vw - 32px), 560px' };
 
 // From examples/sunflower-demo/script/start.hws at the released tag, with Studio's line-ID comments left out.
@@ -41,7 +41,7 @@ const highlighted = SCRIPT.split('\n')
 ---
 
 <section class="sec" id="features" aria-labelledby="t-features">
-  <SectionTitle id="t-features" text={f.title} />
+  <SectionTitle id="t-features" text={f.title} label={f.label} />
 
   <FeatureRow icon="feather" {...f.writers}>
     <Window title={f.writers.shotTitle} class="shot">
@@ -71,7 +71,7 @@ const highlighted = SCRIPT.split('\n')
           <Icon name={m.icon} duo />
           {m.kicker}
         </p>
-        <h3>{m.title}</h3>
+        <h3 set:html={phrase(m.title, lang)} />
         <p set:html={m.text} />
       </li>
     ))}
