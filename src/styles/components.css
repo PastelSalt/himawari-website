@@ -1,0 +1,515 @@
+/* Components shared across pages: header, navigation, menu, news bar, section titles, ornaments, buttons, window
+   frames, cards, and the footer. Thick outlines only on things you click and on window frames (§6.2). */
+
+/* ---------- header ---------- */
+.top {
+  padding-top: 22px;
+}
+.top__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+.top__logo img {
+  height: 64px;
+  width: auto;
+}
+.top__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  border: var(--bw-thin) solid transparent;
+  font-size: 20px;
+  transition: border-color var(--dur-1);
+}
+.icon-btn:hover {
+  border-color: var(--line-strong);
+}
+.lang {
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--gray-600);
+  padding: 0 var(--s-2);
+  white-space: nowrap;
+}
+.lang b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lang a {
+  color: var(--gray-600);
+}
+.lang a:hover {
+  color: var(--ink);
+}
+.motion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: var(--bw-thin) solid var(--line-strong);
+  background: var(--white);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.motion .icon {
+  font-size: 16px;
+}
+.motion[aria-pressed='false'] .icon {
+  opacity: 0.45;
+}
+
+/* ---------- sticky navigation ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  margin-top: 14px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+.nav__row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 58px;
+}
+.nav__name {
+  font-weight: 600;
+  letter-spacing: var(--tracking-pill);
+  font-size: var(--step--1);
+  color: var(--ink);
+  white-space: nowrap;
+}
+.nav__rule {
+  flex: 1;
+  max-width: 140px;
+  height: 1px;
+  background: var(--line-strong);
+}
+.nav__links {
+  display: flex;
+  gap: 26px;
+  margin-left: auto;
+}
+.nav__links a {
+  position: relative;
+  display: inline-block;
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  color: var(--gray-600);
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--sun);
+  transform: scaleX(0);
+  transition: transform var(--dur-2);
+}
+.nav__links a:hover {
+  color: var(--ink);
+}
+.nav__links a:hover::after,
+.nav__links a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* the phone menu: the one element up here with a thick outline */
+.menu {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--sun);
+  color: var(--black);
+  border: var(--bw-thick) solid var(--black);
+  box-shadow: 3px 4px 0 var(--black);
+  font-size: 22px;
+}
+.menu:active {
+  transform: translate(2px, 3px);
+  box-shadow: var(--sh-btn-press);
+}
+.menu-panel {
+  inset: 12px 12px auto auto;
+  width: min(300px, calc(100vw - 24px));
+  margin: 0;
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  border: var(--bw-thick) solid var(--black);
+  border-radius: var(--r-win);
+  background: var(--white);
+  box-shadow: var(--sh-win);
+  color: var(--ink);
+}
+.menu-panel::backdrop {
+  background: rgb(30 26 36 / 0.25);
+}
+.menu-panel__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.menu-panel ul {
+  display: grid;
+  gap: 4px;
+}
+.menu-panel a {
+  display: block;
+  padding: 10px 4px;
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  border-bottom: var(--bw-hair) solid var(--line);
+}
+
+.menu-panel__lang {
+  margin-top: var(--s-4);
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+}
+
+/* ---------- news bar (nanahira.jp's hot topic) ---------- */
+.news {
+  position: relative;
+  margin-top: 18px;
+}
+.news__bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 24px;
+  border-radius: var(--r-bubble);
+  background: var(--sun);
+  color: var(--black);
+  font-size: 15px;
+}
+.news__label {
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  padding-right: 18px;
+  border-right: var(--bw-thin) solid rgb(30 26 36 / 0.35);
+  white-space: nowrap;
+}
+.news__bar a {
+  color: var(--black);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.news__sep {
+  margin: 0 0.5em;
+}
+.news__flower {
+  margin-left: auto;
+  width: 34px;
+  flex: none;
+}
+.news::after {
+  content: '';
+  position: absolute;
+  right: 90px;
+  bottom: -16px;
+  width: 34px;
+  height: 22px;
+  background: var(--sun);
+  clip-path: polygon(0 0, 100% 0, 70% 100%);
+}
+
+/* ---------- sections and their pill titles (thin double-line pill on a rule) ---------- */
+.sec {
+  padding: var(--s-9) 0 20px;
+}
+.sec-title {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0 0 54px;
+}
+.sec-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--line-strong);
+}
+.sec-title__pill {
+  position: relative;
+  padding: 6px 34px;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  border: var(--bw-thin) solid var(--line-strong);
+  box-shadow:
+    0 0 0 5px var(--paper),
+    0 0 0 6.5px var(--line-strong);
+  font-size: var(--step-3);
+  font-weight: 500;
+  letter-spacing: var(--tracking-pill);
+  color: var(--ink);
+  white-space: nowrap;
+}
+.sec-title__l {
+  display: inline-block;
+}
+.ornament {
+  display: grid;
+  place-items: center;
+  margin: 56px 0 0;
+}
+.ornament svg {
+  width: 40px;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 26px;
+  border-radius: var(--r-btn);
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--black);
+  background: var(--sun);
+  border: var(--bw-thick) solid var(--black);
+  box-shadow: var(--sh-btn);
+  transition:
+    transform var(--dur-1),
+    box-shadow var(--dur-1),
+    background-color var(--dur-1);
+}
+.btn:hover {
+  background: var(--sun-deep);
+}
+.btn:active {
+  transform: translate(3px, 4px);
+  box-shadow: var(--sh-btn-press);
+}
+.btn .icon {
+  font-size: 22px;
+}
+.btn--ghost {
+  background: var(--white);
+  box-shadow: var(--sh-btn-sun);
+}
+.btn--ghost:hover {
+  background: var(--sun-wash);
+}
+.btn--ghost:active {
+  box-shadow: 1px 1px 0 var(--sun);
+}
+.btn--wide {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--s-6);
+  background: var(--sun-wash);
+  box-shadow: var(--sh-btn-sun);
+  letter-spacing: var(--tracking-label);
+}
+.btn--wide:hover {
+  background: var(--sun);
+}
+.btn--wide .btn__arrow {
+  font-size: 18px;
+}
+
+/* ---------- window frame ---------- */
+.win {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--white);
+  border: var(--bw-thick) solid var(--black);
+  border-radius: var(--r-win);
+  box-shadow: var(--sh-win);
+  overflow: hidden;
+}
+.win__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  border-bottom: 2px solid var(--black);
+  background: var(--sun-wash);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  color: var(--gray-600);
+  white-space: pre;
+  overflow: hidden;
+}
+.win__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.win__dots {
+  display: flex;
+  gap: 6px;
+}
+.win__dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: var(--bw-thin) solid var(--black);
+  background: var(--white);
+}
+.win__dots span:first-child {
+  background: var(--sun);
+}
+
+/* ---------- cards (thin borders) ---------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+.card {
+  background: var(--white);
+  border: var(--bw-hair) solid var(--line);
+  border-radius: var(--r-card);
+  padding: 28px 26px;
+}
+.card__icon {
+  font-size: 44px;
+}
+.card h3 {
+  margin: 12px 0 8px;
+  font-size: var(--step-2);
+  letter-spacing: 0.02em;
+}
+.card p {
+  font-size: 15.5px;
+}
+
+/* ---------- footer ---------- */
+.foot-zone {
+  padding: 54px 0 40px;
+}
+.foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+}
+.foot__flowers {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.foot__right {
+  text-align: right;
+  font-size: 12.5px;
+  letter-spacing: 0.12em;
+  color: var(--gray-500);
+}
+.foot__mw {
+  display: inline-block;
+}
+.foot__mw img {
+  height: 46px;
+  width: auto;
+  margin-left: auto;
+  margin-bottom: 10px;
+}
+.foot__links {
+  display: flex;
+  gap: 18px;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+.foot__links a {
+  color: var(--gray-600);
+}
+.foot__links a:hover {
+  color: var(--ink);
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 760px) {
+  .top__logo img {
+    height: 40px;
+  }
+  .lang {
+    display: none;
+  }
+  .motion__text {
+    /* visually hidden, still the button's name */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .motion {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+  .nav__links,
+  .nav__rule {
+    display: none;
+  }
+  .nav__row {
+    justify-content: space-between;
+  }
+  .menu {
+    display: inline-grid;
+  }
+  .news__bar {
+    font-size: 13.5px;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .news__flower {
+    display: none;
+  }
+  .sec {
+    padding-top: 70px;
+  }
+  .sec-title__pill {
+    padding: 5px 22px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .foot__right {
+    text-align: left;
+  }
+  .foot__mw img {
+    margin-left: 0;
+  }
+  .foot__links {
+    justify-content: flex-start;
+  }
+}

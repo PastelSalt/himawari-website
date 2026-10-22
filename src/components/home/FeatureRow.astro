@@ -1,0 +1,34 @@
+---
+/** A feature row: a kicker with an icon, a heading, a short paragraph, a list with yellow markers, and a visual. */
+import Icon from '../ui/Icon.astro';
+interface Props {
+  icon: string;
+  kicker: string;
+  title: string;
+  /** html */
+  text: string;
+  /** html */
+  list: string[];
+  flip?: boolean;
+}
+const { icon, kicker, title, text, list, flip = false } = Astro.props;
+---
+
+<div class:list={['feature', { 'feature--flip': flip }]}>
+  <div class="feature__text reveal">
+    <p class="feature__kicker">
+      <Icon name={icon} duo />
+      {kicker}
+    </p>
+    <h3>{title}</h3>
+    <p set:html={text} />
+    <ul>
+      {list.map((li) => (
+        <li set:html={li} />
+      ))}
+    </ul>
+  </div>
+  <div class="feature__visual reveal" style="--d:1">
+    <slot />
+  </div>
+</div>

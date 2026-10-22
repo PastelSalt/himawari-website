@@ -1,0 +1,23 @@
+---
+/**
+ * The sticker button: thick black outline and an offset shadow that closes up when pressed.
+ * `primary` is yellow with a black shadow; `ghost` is white with a yellow shadow; `wide` is the pale-yellow
+ * full-width button (nanahira.jp's "more" button).
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Icon from './Icon.astro';
+interface Props extends HTMLAttributes<'a'> {
+  href: string;
+  variant?: 'primary' | 'ghost' | 'wide';
+  icon?: string;
+}
+const { variant = 'primary', icon, class: cls, ...rest } = Astro.props;
+---
+
+<a class:list={['btn', 'plain', `btn--${variant}`, cls]} {...rest}>
+  {icon && <Icon name={icon} />}
+  <span>
+    <slot />
+  </span>
+  {variant === 'wide' && <Icon name="arrow-right" class="btn__arrow" />}
+</a>

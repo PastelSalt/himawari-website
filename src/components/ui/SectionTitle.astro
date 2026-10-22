@@ -1,0 +1,23 @@
+---
+/**
+ * The pill section title: one word in capitals inside a thin double-line pill, centered on a full-width rule.
+ * Each letter is its own span so the letters can pop in; screen readers get the word once.
+ */
+interface Props {
+  id: string;
+  text: string;
+}
+const { id, text } = Astro.props;
+const letters = [...text];
+---
+
+<h2 class="sec-title" id={id}>
+  <span class="sec-title__pill">
+    <span class="sr-only">{text}</span>
+    {letters.map((c, i) => (
+      <span class="sec-title__l" style={`--i:${i}`} aria-hidden="true">
+        {c === ' ' ? ' ' : c}
+      </span>
+    ))}
+  </span>
+</h2>

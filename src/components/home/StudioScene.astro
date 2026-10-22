@@ -1,0 +1,60 @@
+---
+/**
+ * The live Studio window (WEBSITE.md §5.4), in HTML and CSS: a screenplay row on one side, the game on the other.
+ * Rendered with the first line finished, which is what Motion OFF shows. The typing island (W2) drives the
+ * data-* hooks. The whole window is one image to assistive technology, described by its label.
+ */
+import Window from '../ui/Window.astro';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy['hero'];
+}
+const h = Astro.props.copy;
+const first = h.lines[0]!;
+---
+
+<Window title={`Himawari Studio  ·  ${h.file}`} label={h.windowLabel} class="hero__win" data-studio>
+  <div class="studio" aria-hidden="true">
+    <div class="sp">
+      <div class="sp__row">
+        <span class="sp__who">{h.narration}</span>
+        <span class="sp__text">{h.narrationLine}</span>
+      </div>
+      <div class="sp__row sp__row--active">
+        <span class="sp__who">{h.speaker}</span>
+        <span class="sp__chip" data-chip>
+          {first.mood}
+        </span>
+        <span class="sp__text">
+          <span data-typed>{first.text}</span>
+          <span class="sp__caret"></span>
+        </span>
+      </div>
+      <div class="sp__add">
+        {h.add.map((a) => (
+          <span>{a}</span>
+        ))}
+      </div>
+    </div>
+    <div class="game">
+      <div class="game__sun"></div>
+      <div class="game__field"></div>
+      <div class="char" data-char>
+        <span class="char__tag" data-tag>
+          {h.speaker} · {first.mood}
+        </span>
+        <div class="char__head">
+          <span class="char__face" data-face>
+            {first.face}
+          </span>
+        </div>
+        <div class="char__body"></div>
+      </div>
+      <div class="tbox">
+        <span class="tbox__name">{h.speaker}</span>
+        <span data-said>{first.text}</span>
+      </div>
+    </div>
+  </div>
+</Window>

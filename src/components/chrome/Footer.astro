@@ -1,0 +1,37 @@
+---
+/** The footer: the logo flowers bobbing on the left; Moeko Works, links, and the license line on the right. */
+import { Image } from 'astro:assets';
+import flowers from '../../assets/brand/flowers.png';
+import moekoWorks from '../../assets/brand/moeko-works.png';
+import { PORTFOLIO } from '../../lib/site';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy;
+}
+const f = Astro.props.copy.chrome.footer;
+---
+
+<footer class="foot-zone">
+  <div class="wrap foot">
+    <div class="foot__flowers" aria-hidden="true">
+      <Image src={flowers} alt="" width={64} densities={[1, 2]} class="bob" />
+      <Image src={flowers} alt="" width={44} densities={[1, 2]} class="bob bob--late" />
+    </div>
+    <div class="foot__right">
+      <a class="foot__mw plain" href={PORTFOLIO.url} rel="noopener">
+        <Image src={moekoWorks} alt={f.madeBy} height={46} densities={[1, 2]} />
+      </a>
+      <ul class="foot__links" role="list">
+        {f.links.map((l) => (
+          <li>
+            <a class="plain" href={l.href}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>{f.legal}</p>
+    </div>
+  </div>
+</footer>

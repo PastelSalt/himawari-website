@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Astro's font and image caches: the Google Fonts downloads are flaky without it
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-cache-${{ hashFiles('astro.config.ts') }}
+          restore-keys: astro-cache-
+      - run: npm run lint
+      - run: npm run contrast
+      - run: npm run test
+
+      # latest release → astro check → build → CSP hashes (retry once: font downloads)
+      - run: npm run build || npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm run budget
+
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test --project=chromium --project=webkit --project=mobile
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+      - run: npm audit --omit=dev --audit-level=high

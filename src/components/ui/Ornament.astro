@@ -1,0 +1,11 @@
+---
+/** The small flower between sections, in place of nanahira.jp's ribbon. */
+import Flower from './Flower.astro';
+interface Props {
+  white?: boolean;
+}
+---
+
+<div class="ornament" aria-hidden="true">
+  <Flower white={Astro.props.white} class="bob" />
+</div>

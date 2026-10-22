@@ -1,0 +1,77 @@
+---
+/** Download: the button again, the requirements, the SmartScreen step, and the installer's SHA-256. */
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import SectionTitle from '../ui/SectionTitle.astro';
+import { RELEASE, RELEASES_URL, installerSize, releaseDate, type Lang } from '../../lib/site';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  lang: Lang;
+  copy: Copy['download'];
+  label: string;
+}
+const { lang, copy: d, label } = Astro.props;
+---
+
+<section class="sec" id="download" aria-labelledby="t-download">
+  <SectionTitle id="t-download" text={d.title} />
+  <div class="dl">
+    <div class="dl__main reveal">
+      <h3>{d.heading}</h3>
+      <p>{d.intro}</p>
+      <p class="dl__phone">{d.phone}</p>
+      <div class="hero__dl">
+        <Button href={RELEASE.installer.url} icon="windows-logo" data-confetti aria-describedby="dl-meta">
+          {label}
+        </Button>
+        <span class="hero__meta" id="dl-meta">
+          {RELEASE.version}
+          <span aria-hidden="true">&nbsp;·&nbsp;</span>
+          <span class="sr-only">, </span>
+          {releaseDate(lang)}
+          <span aria-hidden="true">&nbsp;·&nbsp;</span>
+          <span class="sr-only">, </span>
+          {installerSize()}
+        </span>
+      </div>
+      <p class="dl__links">
+        <a href={RELEASE.notesUrl}>{d.notes}</a>
+        <a href={RELEASES_URL}>{d.all}</a>
+      </p>
+    </div>
+    <div class="dl__side reveal" style="--d:1">
+      <div class="table-card">
+        <table class="req">
+          <caption>{d.requirements.caption}</caption>
+          <thead>
+            <tr>{d.requirements.cols.map((c, i) => (i ? <th scope="col">{c}</th> : <td />))}</tr>
+          </thead>
+          <tbody>
+            {d.requirements.rows.map(([head, ...cells]) => (
+              <tr>
+                <th scope="row">{head}</th>
+                {cells.map((c) => (
+                  <td>{c}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="note-card">
+        <h4>
+          <Icon name="shield-check" duo />
+          {d.smartscreen.title}
+        </h4>
+        <p set:html={d.smartscreen.text} />
+        {RELEASE.installer.sha256 && (
+          <p class="sha">
+            <span class="sha__label">{d.sha}</span>
+            <code>{RELEASE.installer.sha256}</code>
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

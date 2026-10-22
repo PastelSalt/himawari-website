@@ -1,0 +1,27 @@
+---
+/** The speech-bubble news bar (nanahira.jp's "hot topic"): the latest news post, with a bobbing white flower. */
+import Flower from '../ui/Flower.astro';
+interface Props {
+  label: string;
+  post: { title: string; summary: string; href: string };
+}
+const { label, post } = Astro.props;
+---
+
+<aside class="news" aria-label={label}>
+  <p class="news__bar">
+    <span class="news__label" aria-hidden="true">
+      {label}
+    </span>
+    <span class="news__text">
+      <a class="plain" href={post.href}>
+        {post.title}
+      </a>
+      <span class="news__sep" aria-hidden="true">
+        ·
+      </span>
+      {post.summary}
+    </span>
+    <Flower white class="news__flower bob" />
+  </p>
+</aside>

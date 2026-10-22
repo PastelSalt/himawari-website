@@ -1,0 +1,106 @@
+---
+/**
+ * One inline SVG sprite (WEBSITE.md §6.4). Reference with <Icon name="code" duo />.
+ *
+ * Icons come from Phosphor Icons (MIT, @phosphor-icons/core), copied in at build time: duotone ones as
+ * #ph-<name>, regular ones as #phr-<name>. The duotone fill layer takes --ph-fill / --ph-op from the <svg> that
+ * uses it, so .icon--duo makes every icon black with a solid sunflower fill.
+ *
+ * The flowers are the logo's five-petal flower drawn in code: #flower (yellow, dark center) and
+ * #flower-white (white, yellow center).
+ */
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+
+const DUOTONE = [
+  'book-open',
+  'bug',
+  'chat-circle-text',
+  'code',
+  'feather',
+  'file-code',
+  'git-pull-request',
+  'github-logo',
+  'graduation-cap',
+  'lightning',
+  'newspaper',
+  'package',
+  'palette',
+  'pencil-simple-line',
+  'shield-check',
+  'sparkle',
+  'terminal-window',
+  'translate',
+];
+const REGULAR = [
+  'arrow-right',
+  'arrow-square-out',
+  'book-open',
+  'caret-down',
+  'download-simple',
+  'envelope-simple',
+  'github-logo',
+  'list',
+  'sparkle',
+  'windows-logo',
+  'x',
+];
+
+// the package exports only its entry (dist/index.*), so the assets folder is found next to it
+const root = join(dirname(createRequire(import.meta.url).resolve('@phosphor-icons/core')), '..', 'assets');
+const body = (svg: string) => svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+const duo = DUOTONE.map((n) => {
+  const inner = body(readFileSync(join(root, 'duotone', `${n}-duotone.svg`), 'utf8')).replace(
+    ' opacity="0.2"',
+    ' style="fill:var(--ph-fill,currentColor);opacity:var(--ph-op,0.2)"',
+  );
+  return `<symbol id="ph-${n}" viewBox="0 0 256 256"><g fill="currentColor">${inner}</g></symbol>`;
+});
+const regular = REGULAR.map((n) => {
+  const inner = body(readFileSync(join(root, 'regular', `${n}.svg`), 'utf8'));
+  return `<symbol id="phr-${n}" viewBox="0 0 256 256"><g fill="currentColor">${inner}</g></symbol>`;
+});
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="0"
+  height="0"
+  style="position:absolute"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <symbol id="flower" viewBox="0 0 100 100">
+      <g stroke="#1e1a24" stroke-width="5" style="fill:var(--sun,#f5d57c)">
+        <circle cx="50" cy="22" r="20"></circle>
+        <circle cx="77" cy="42" r="20"></circle>
+        <circle cx="67" cy="74" r="20"></circle>
+        <circle cx="33" cy="74" r="20"></circle>
+        <circle cx="23" cy="42" r="20"></circle>
+      </g>
+      <circle cx="50" cy="50" r="22" style="fill:var(--sun,#f5d57c)"></circle>
+      <circle cx="50" cy="50" r="13" fill="#5a5a5a" stroke="#1e1a24" stroke-width="5"></circle>
+    </symbol>
+    <symbol id="flower-white" viewBox="0 0 100 100">
+      <g stroke="#1e1a24" stroke-width="5" fill="#fff">
+        <circle cx="50" cy="22" r="20"></circle>
+        <circle cx="77" cy="42" r="20"></circle>
+        <circle cx="67" cy="74" r="20"></circle>
+        <circle cx="33" cy="74" r="20"></circle>
+        <circle cx="23" cy="42" r="20"></circle>
+      </g>
+      <circle cx="50" cy="50" r="22" fill="#fff"></circle>
+      <circle
+        cx="50"
+        cy="50"
+        r="13"
+        stroke="#1e1a24"
+        stroke-width="5"
+        style="fill:var(--sun,#f5d57c)"
+      ></circle>
+    </symbol>
+    <Fragment set:html={duo.join('') + regular.join('')} />
+  </defs>
+</svg>

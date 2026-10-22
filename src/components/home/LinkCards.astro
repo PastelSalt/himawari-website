@@ -1,0 +1,28 @@
+---
+/** A grid of link cards with a duotone icon each (Learn, Get involved). The title is the link. */
+import Icon from '../ui/Icon.astro';
+import SectionTitle from '../ui/SectionTitle.astro';
+interface Props {
+  id: string;
+  title: string;
+  items: { icon: string; title: string; text: string; href: string }[];
+}
+const { id, title, items } = Astro.props;
+---
+
+<section class="sec" id={id} aria-labelledby={`t-${id}`}>
+  <SectionTitle id={`t-${id}`} text={title} />
+  <ul class:list={['links', { 'links--pairs': items.length % 2 === 0 }]} role="list">
+    {items.map((it, i) => (
+      <li class="links__item reveal" style={`--d:${i % 3}`}>
+        <Icon name={it.icon} duo class="links__icon" />
+        <div>
+          <h3>
+            <a href={it.href}>{it.title}</a>
+          </h3>
+          <p>{it.text}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>

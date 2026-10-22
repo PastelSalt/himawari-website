@@ -1,0 +1,24 @@
+---
+/** The three promises, as three cards with thin borders and a duotone icon each. */
+import Icon from '../ui/Icon.astro';
+import SectionTitle from '../ui/SectionTitle.astro';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy['about'];
+}
+const a = Astro.props.copy;
+---
+
+<section class="sec" id="about" aria-labelledby="t-about">
+  <SectionTitle id="t-about" text={a.title} />
+  <ul class="cards" role="list">
+    {a.cards.map((c, i) => (
+      <li class="card reveal" style={`--d:${i}`}>
+        <Icon name={c.icon} duo class="card__icon" />
+        <h3>{c.title}</h3>
+        <p>{c.text}</p>
+      </li>
+    ))}
+  </ul>
+</section>

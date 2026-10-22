@@ -1,0 +1,35 @@
+---
+/**
+ * The page's one dark moment: a black band for the coming visual novel. No dates, names, or samples until the
+ * owner announces them. Flowers fall slowly behind it (CSS only, positions fixed at build so nothing shifts).
+ */
+import Flower from '../ui/Flower.astro';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy['soon'];
+}
+const s = Astro.props.copy;
+const FALL = Array.from({ length: 14 }, (_, i) => ({
+  white: i % 3 === 0,
+  style: [
+    `left:${((i * 7.3 + 3) % 100).toFixed(1)}%`,
+    `width:${14 + (i % 4) * 6}px`,
+    `--fall:${(9 + (i % 5) * 2.2).toFixed(1)}s`,
+    `--delay:${(-i * 1.3).toFixed(1)}s`,
+    `--y:${(i * 37) % 100}%`,
+    `opacity:${(0.35 + (i % 3) * 0.2).toFixed(2)}`,
+  ].join(';'),
+}));
+---
+
+<section class="soon" aria-labelledby="t-soon">
+  <div class="soon__fall" aria-hidden="true">
+    {FALL.map((f) => (
+      <Flower white={f.white} class="soon__flower" style={f.style} />
+    ))}
+  </div>
+  <p class="soon__pill">{s.pill}</p>
+  <h2 id="t-soon">{s.title}</h2>
+  <p class="soon__text">{s.text}</p>
+</section>

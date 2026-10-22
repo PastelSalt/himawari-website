@@ -1,0 +1,22 @@
+---
+/** The window frame: a thing you look at closely, so it gets a thick outline and a sunflower shadow. */
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends HTMLAttributes<'div'> {
+  title: string;
+  /** when set, the window is one image to assistive technology, described by this label */
+  label?: string;
+}
+const { title, label, class: cls, ...rest } = Astro.props;
+---
+
+<div class:list={['win', cls]} role={label ? 'img' : undefined} aria-label={label} {...rest}>
+  <div class="win__bar" aria-hidden="true">
+    <span class="win__dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <span class="win__title">{title}</span>
+  </div>
+  <slot />
+</div>

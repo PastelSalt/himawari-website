@@ -1,0 +1,49 @@
+---
+/** The first screen: what Himawari is, that it's free and for Windows, the download, and the live Studio window. */
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import Flower from '../ui/Flower.astro';
+import StudioScene from './StudioScene.astro';
+import flowers from '../../assets/brand/flowers.png';
+import { RELEASE, installerSize, releaseDate, atTag, type Lang } from '../../lib/site';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  lang: Lang;
+  copy: Copy['hero'];
+}
+const { lang, copy: h } = Astro.props;
+const tutorial = atTag(lang === 'ja' ? 'docs/ja/tutorials/first-game.md' : 'docs/tutorials/first-game.md');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <Image src={flowers} alt="" width={74} densities={[1, 2]} class="drift drift--a" loading="eager" />
+  <Flower class="drift drift--b" />
+  <div class="hero__copy">
+    <h1 id="hero-title" set:html={h.title} />
+    <p class="hero__lead">{h.lead}</p>
+    <div class="hero__actions">
+      <div class="hero__dl">
+        <Button href={RELEASE.installer.url} icon="windows-logo" data-confetti aria-describedby="hero-meta">
+          {h.download}
+        </Button>
+        <span class="hero__meta" id="hero-meta">
+          {RELEASE.version}
+          <span aria-hidden="true">&nbsp;·&nbsp;</span>
+          <span class="sr-only">, </span>
+          {releaseDate(lang)}
+          <span aria-hidden="true">&nbsp;·&nbsp;</span>
+          <span class="sr-only">, </span>
+          {installerSize()}
+        </span>
+      </div>
+      <Button variant="ghost" href={tutorial} icon="book-open">
+        {h.firstGame}
+      </Button>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <StudioScene copy={h} />
+    <p class="hero__note">{h.note}</p>
+  </div>
+</section>

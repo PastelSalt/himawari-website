@@ -1,0 +1,103 @@
+/* Design tokens (WEBSITE.md §6.2, the approved mockup's values). Variables only.
+   Every text pair is checked at WCAG AA by scripts/contrast-check.ts. */
+:root {
+  /* the sunflower: yellow for fills, highlights, and shadows only, never text on light */
+  --sun: #f5d57c;
+  --sun-deep: #f1cb60;
+  --sun-wash: #fdf3d4;
+  /* paper and white */
+  --paper: #fffcf2;
+  --white: #ffffff;
+  /* text, gray, and black */
+  --ink: #2e2a33; /* headings */
+  --text: #45404d; /* body */
+  --gray-600: #5d5869; /* secondary text, navigation */
+  --gray-500: #77727f; /* dates and small captions only */
+  --line: #ddd6c8; /* card borders, dividers */
+  --line-strong: #4a4550; /* pill outlines, section rules, thin control borders */
+  --black: #1e1a24; /* thick outlines, shadows on yellow buttons, the black band, text on yellow */
+  /* the black band (coming soon) */
+  --band-head: var(--sun);
+  --band-text: #d9d3c4;
+  --band-strong: #f3eedf;
+  /* the hero's little game (decoration, not text) */
+  --game-sky: #bfe2fb;
+  --game-grass: #9ccf7d;
+  --game-sun: #fff4c2;
+  --game-skin: #f7e7d3;
+  --game-hair: #6b4a1f;
+
+  /* type */
+  --jp-round-fallback: 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', sans-serif;
+  --font: var(--font-fredoka, system-ui), var(--font-maru, var(--jp-round-fallback)), system-ui, sans-serif;
+  --font-ja: var(--font-maru, var(--jp-round-fallback)), var(--font-fredoka, system-ui), sans-serif;
+  /* fluid scale, 360 → 1600 px; the mockup's sizes at desktop */
+  --step--2: clamp(0.72rem, 0.7rem + 0.08vw, 0.78rem); /* ~12px: notes, meta */
+  --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem); /* ~13px: labels, nav */
+  --step-0: clamp(1rem, 0.97rem + 0.12vw, 1.07rem); /* ~17px: body */
+  --step-1: clamp(1.1rem, 1.04rem + 0.25vw, 1.2rem); /* ~19px: lead */
+  --step-2: clamp(1.15rem, 1.06rem + 0.4vw, 1.27rem); /* ~20px: card titles */
+  --step-3: clamp(1.25rem, 1.05rem + 0.9vw, 1.65rem); /* ~26px: pill titles */
+  --step-4: clamp(1.45rem, 1.25rem + 0.9vw, 1.75rem); /* ~28px: feature headings */
+  --step-5: clamp(1.85rem, 1.5rem + 1.6vw, 2.75rem); /* ~44px: the band's headline */
+  --step-6: clamp(2.1rem, 1.6rem + 2.2vw, 3.25rem); /* ~52px: the hero */
+  --tracking-label: 0.18em;
+  --tracking-pill: 0.16em;
+
+  /* layout */
+  --column: 1000px;
+  --gutter: 16px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 92px;
+
+  /* outlines: thick only on things you click and on window frames (§6.2) */
+  --bw-thick: 2.5px;
+  --bw-thin: 1.5px;
+  --bw-hair: 1px;
+  --r-pill: 999px;
+  --r-sm: 10px;
+  --r-btn: 16px;
+  --r-win: 18px;
+  --r-card: 20px;
+  --r-bubble: 22px;
+  /* offset shadows */
+  --sh-btn: 4px 5px 0 var(--black);
+  --sh-btn-sun: 4px 5px 0 var(--sun);
+  --sh-btn-press: 1px 1px 0 var(--black);
+  --sh-win: 8px 10px 0 var(--sun);
+  --ring: 0 0 0 2px var(--white), 0 0 0 5px var(--black); /* keyboard focus: 3 px black, 2 px white gap */
+
+  /* layers */
+  --z-deco: 0;
+  --z-content: 1;
+  --z-nav: 10;
+  --z-menu: 20;
+  --z-skip: 50;
+
+  /* motion: every duration is multiplied out when Motion is off */
+  --ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
+  --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-float: cubic-bezier(0.37, 0, 0.63, 1);
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 700ms;
+}
+html[data-motion='off'] {
+  --dur-1: 0ms;
+  --dur-2: 0ms;
+  --dur-3: 0ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion='on']) {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+  }
+}

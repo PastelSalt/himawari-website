@@ -1,0 +1,48 @@
+{
+  "name": "himawari-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "tsx scripts/sync-release.ts && astro check && astro build && tsx scripts/csp-hash.ts",
+    "preview": "node scripts/dev/serve-dist.mjs 4321",
+    "release": "tsx scripts/sync-release.ts",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "astro check",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "contrast": "tsx scripts/contrast-check.ts",
+    "budget": "tsx scripts/check-budget.ts"
+  },
+  "dependencies": {
+    "@astrojs/preact": "6.0.6",
+    "@astrojs/sitemap": "3.7.4",
+    "@astrojs/vercel": "11.0.13",
+    "@phosphor-icons/core": "2.1.1",
+    "astro": "7.3.8",
+    "preact": "10.29.8",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.64.0",
+    "eslint": "10.12.0",
+    "eslint-plugin-astro": "3.2.1",
+    "playwright-core": "1.64.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vitest": "5.0.3"
+  },
+  "overrides": {
+    "path-to-regexp@<6.3.0": "6.3.0"
+  }
+}

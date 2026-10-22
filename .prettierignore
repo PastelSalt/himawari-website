@@ -1,0 +1,13 @@
+dist
+.astro
+.vercel
+node_modules
+package-lock.json
+db/migrations
+playwright-report
+test-results
+scripts/dev
+.claude
+# rewritten by scripts/sync-release.ts and scripts/csp-hash.ts on every build
+src/data/release.json
+vercel.json

@@ -1,0 +1,70 @@
+/* Keyframes and idle motion (WEBSITE.md §7). Every animation is gated by html[data-motion='on'], and with Motion
+   off nothing moves at all. Only transform and opacity animate. Scripted motion (the typing hero, letter pops,
+   reveals, confetti) arrives in W2. */
+@keyframes bob {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(8deg);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes fall {
+  from {
+    transform: translateY(-80px) rotate(0deg);
+  }
+  to {
+    transform: translateY(600px) rotate(260deg);
+  }
+}
+
+html[data-motion='on'] .bob {
+  animation: bob 2.8s var(--ease-float) infinite;
+}
+html[data-motion='on'] .news__flower {
+  animation-duration: 2.4s;
+}
+html[data-motion='on'] .foot__flowers .bob {
+  animation-duration: 3s;
+}
+html[data-motion='on'] .bob--late {
+  animation-delay: -1.2s;
+}
+html[data-motion='on'] .drift--a {
+  animation: float 7s var(--ease-float) infinite;
+}
+html[data-motion='on'] .drift--b {
+  animation: float 8s var(--ease-float) infinite reverse;
+}
+html[data-motion='on'] .sp__caret {
+  animation: blink 1s steps(1) infinite;
+}
+/* coming soon: with Motion on, the flowers start above the band and fall through it */
+html[data-motion='on'] .soon__flower {
+  top: -40px;
+  animation: fall var(--fall, 10s) linear var(--delay, 0s) infinite;
+}
+
+/* Motion off: nothing moves, including transitions */
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* looping decoration stops while its zone is scrolled out of view (offscreen.ts, W2) */
+[data-offscreen] :is(.bob, .drift, .sp__caret, .soon__flower) {
+  animation-play-state: paused !important;
+}

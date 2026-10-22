@@ -1,0 +1,13 @@
+---
+/** The logo's five-petal flower, drawn in code (Sprite.astro). Always decoration. */
+interface Props {
+  white?: boolean;
+  class?: string;
+  style?: string;
+}
+const { white = false, class: cls, style } = Astro.props;
+---
+
+<svg class={cls} style={style} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+  <use href={white ? '#flower-white' : '#flower'}></use>
+</svg>

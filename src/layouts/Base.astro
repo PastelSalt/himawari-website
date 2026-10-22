@@ -1,0 +1,85 @@
+---
+/**
+ * Base layout: html/meta/OG, fonts, the pre-paint Motion script, the icon sprite, and the site chrome
+ * (header, sticky navigation, footer).
+ */
+import { Font } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import '../styles/sections.css';
+import '../styles/motion.css';
+import Sprite from '../components/chrome/Sprite.astro';
+import Header from '../components/chrome/Header.astro';
+import Footer from '../components/chrome/Footer.astro';
+import { SITE_NAME, type Lang } from '../lib/site';
+import type { Copy } from '../i18n/en';
+
+export interface Props {
+  lang: Lang;
+  copy: Copy;
+  title: string;
+  description: string;
+  /** the same page in the other language, for hreflang and the language switch */
+  alternate: { en: string; ja: string };
+  jsonLd?: Record<string, unknown>;
+}
+const { lang, copy, title, description, alternate, jsonLd } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.site);
+---
+
+<!doctype html>
+<html lang={lang} data-motion="on">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang="en" href={new URL(alternate.en, Astro.site).href} />
+    <link rel="alternate" hreflang="ja" href={new URL(alternate.ja, Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(alternate.en, Astro.site).href} />
+    <meta name="theme-color" content="#FFFCF2" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={lang === 'ja' ? 'ja_JP' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="generator" content={Astro.generator} />
+    <!-- Pre-paint Motion (WEBSITE.md §7.1): the saved choice, else prefers-reduced-motion. Its sha256 goes in the
+         CSP (scripts/csp-hash.ts). ?still turns motion off for this visit without saving it. -->
+    <script is:inline>
+      (() => {
+        const d = document.documentElement;
+        let s = {};
+        try {
+          s = JSON.parse(localStorage.getItem('hws:prefs') || '{}');
+        } catch {}
+        const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        d.dataset.motion = /[?&]still\b/.test(location.search) ? 'off' : (s.motion ?? (rm ? 'off' : 'on'));
+      })();
+    </script>
+    <Font cssVariable="--font-fredoka" preload />
+    <link rel="stylesheet" href="/fonts/jp.css" media="print" data-jp-fonts />
+    <noscript>
+      <link rel="stylesheet" href="/fonts/jp.css" />
+    </noscript>
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link plain" href="#main">
+      {copy.chrome.skip}
+    </a>
+    <Sprite />
+    <Header lang={lang} copy={copy} alternate={alternate} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer copy={copy} />
+    <script>
+      import '../scripts/global';
+    </script>
+  </body>
+</html>

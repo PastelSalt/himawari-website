@@ -1,0 +1,26 @@
+---
+/** The README's questions, as native <details>: no script, and they open with the keyboard. */
+import Icon from '../ui/Icon.astro';
+import SectionTitle from '../ui/SectionTitle.astro';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy['faq'];
+}
+const f = Astro.props.copy;
+---
+
+<section class="sec" id="faq" aria-labelledby="t-faq">
+  <SectionTitle id="t-faq" text={f.title} />
+  <div class="faq">
+    {f.items.map((it) => (
+      <details class="faq__item">
+        <summary>
+          <span>{it.q}</span>
+          <Icon name="caret-down" class="faq__caret" />
+        </summary>
+        <p set:html={it.a} />
+      </details>
+    ))}
+  </div>
+</section>

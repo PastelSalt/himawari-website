@@ -1,0 +1,79 @@
+---
+/**
+ * Features: writers and artists with real Studio screenshots, coders with real script, then translators, the games
+ * you ship, and optional AI as three cards (there are no screenshots of those yet, and nothing is drawn).
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import SectionTitle from '../ui/SectionTitle.astro';
+import Window from '../ui/Window.astro';
+import FeatureRow from './FeatureRow.astro';
+import studio from '../../assets/shots/studio.png';
+import uiDesigner from '../../assets/shots/ui-designer.png';
+import type { Copy } from '../../i18n/en';
+
+interface Props {
+  copy: Copy['features'];
+}
+const f = Astro.props.copy;
+const shot = { widths: [560, 840, 1120], sizes: '(max-width: 760px) calc(100vw - 32px), 560px' };
+
+// From examples/sunflower-demo/script/start.hws at the released tag, with Studio's line-ID comments left out.
+const SCRIPT = `scene start:
+    change_place(sunflower_field, 800)
+    music summer_theme fade(1000)
+    ambient cicadas fade(500)
+    "Summer vacation. The sunflowers are taller than I am."
+    enter(hana, left)
+    hana happy "There you are! I {b}knew{/b} you'd come."
+    voice hana_hello
+    hana "The festival is tonight. Will you help me get ready?"
+    jump ask`;
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// a light touch of color: statements bold, strings in quotes muted
+const highlighted = SCRIPT.split('\n')
+  .map((line) =>
+    esc(line)
+      .replace(/^(\s*)(scene|music|ambient|voice|jump)\b/, '$1<b>$2</b>')
+      .replace(/("[^"]*")/g, '<span class="code__str">$1</span>'),
+  )
+  .join('\n');
+---
+
+<section class="sec" id="features" aria-labelledby="t-features">
+  <SectionTitle id="t-features" text={f.title} />
+
+  <FeatureRow icon="feather" {...f.writers}>
+    <Window title={f.writers.shotTitle} class="shot">
+      <Image src={studio} alt={f.writers.shotAlt} {...shot} />
+    </Window>
+  </FeatureRow>
+
+  <FeatureRow icon="palette" {...f.artists} flip>
+    <Window title={f.artists.shotTitle} class="shot">
+      <Image src={uiDesigner} alt={f.artists.shotAlt} {...shot} />
+    </Window>
+  </FeatureRow>
+
+  <FeatureRow icon="terminal-window" {...f.coders}>
+    <figure class="code">
+      <Window title={f.coders.codeTitle}>
+        <pre tabindex="0"><code set:html={highlighted} /></pre>
+      </Window>
+      <figcaption class="sr-only">{f.coders.codeLabel}</figcaption>
+    </figure>
+  </FeatureRow>
+
+  <ul class="cards cards--more" role="list">
+    {f.more.map((m, i) => (
+      <li class="card reveal" style={`--d:${i}`}>
+        <p class="feature__kicker">
+          <Icon name={m.icon} duo />
+          {m.kicker}
+        </p>
+        <h3>{m.title}</h3>
+        <p set:html={m.text} />
+      </li>
+    ))}
+  </ul>
+</section>

@@ -1,0 +1,20 @@
+---
+/** A Phosphor icon from the sprite. `duo` picks the duotone icon (black with a sunflower fill). */
+interface Props {
+  name: string;
+  duo?: boolean;
+  label?: string;
+  class?: string;
+}
+const { name, duo = false, label, class: cls } = Astro.props;
+---
+
+<svg
+  class:list={['icon', { 'icon--duo': duo }, cls]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  <use href={duo ? `#ph-${name}` : `#phr-${name}`}></use>
+</svg>
