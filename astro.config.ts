@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig, envField, fontProviders } from 'astro/config';
 import vercel from '@astrojs/vercel';
 import preact from '@astrojs/preact';
@@ -54,5 +55,7 @@ export default defineConfig({
   },
   vite: {
     build: { cssMinify: 'lightningcss' },
+    // see src/stubs/empty.js: keeps the build-only bundler out of the serverless function (as in Aqua)
+    resolve: { alias: { rolldown: fileURLToPath(new URL('./src/stubs/empty.js', import.meta.url)) } },
   },
 });

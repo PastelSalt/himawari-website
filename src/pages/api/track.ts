@@ -12,7 +12,8 @@ export const prerender = false;
 
 const none = () => new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+// (not Astro's clientAddress: @astrojs/vercel throws on reading it; Vercel sets x-forwarded-for)
+export const POST: APIRoute = async ({ request }) => {
   if (!DATABASE_URL) return none();
   const text = await request.text();
   if (text.length > 1024) return none();
@@ -28,7 +29,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const env = process.env.VERCEL_ENV;
   try {
     await recordPageView(db(), view, {
-      ip: h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || clientAddress || '0.0.0.0',
+      ip: h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || '0.0.0.0',
       ua: h.get('user-agent') ?? '',
       host: h.get('host') ?? '',
       country: h.get('x-vercel-ip-country'),
