@@ -16,7 +16,7 @@ export default defineConfig({
   integrations: [
     preact(),
     sitemap({
-      filter: (page) => !page.includes('/api/'),
+      filter: (page) => !page.includes('/api/') && !page.includes('/admin'),
       i18n: { defaultLocale: 'en', locales: { en: 'en', ja: 'ja' } },
     }),
   ],
@@ -51,6 +51,11 @@ export default defineConfig({
       DATABASE_URL_UNPOOLED: envField.string({ context: 'server', access: 'secret', optional: true }),
       CRON_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
       DISCORD_WEBHOOK_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // the admin panel: the owner account is created from these at the first sign-in (src/server/auth.ts)
+      ADMIN_USERNAME: envField.string({ context: 'server', access: 'secret', optional: true }),
+      ADMIN_TEMP_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // saving news rebuilds the site through this Vercel deploy hook
+      VERCEL_DEPLOY_HOOK_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
   vite: {

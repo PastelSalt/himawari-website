@@ -1,0 +1,59 @@
+---
+/**
+ * The admin panel's layout: the site's tokens and buttons, a small header, and no scripts at all (admin pages are
+ * rendered on demand, so their inline scripts couldn't be hashed into the CSP).
+ */
+import { Font } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import '../styles/admin.css';
+
+interface Props {
+  title: string;
+  /** the signed-in owner, when there is one */
+  username?: string;
+}
+const { title, username } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-motion="off">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Himawari admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-fredoka" preload />
+  </head>
+  <body class="admin">
+    <a class="skip-link plain" href="#main">
+      Skip to content
+    </a>
+    <header class="admin-top">
+      <div class="admin-wrap admin-top__row">
+        <a class="admin-top__name plain" href="/admin">
+          HIMAWARI <span>ADMIN</span>
+        </a>
+        {username && (
+          <nav aria-label="Admin">
+            <a href="/admin">News</a>
+            <a href="/admin/password">Password</a>
+            <a href="/" rel="noopener">
+              The site
+            </a>
+            <form method="post" action="/admin/logout">
+              <button class="admin-link" type="submit">
+                Sign out
+              </button>
+            </form>
+          </nav>
+        )}
+      </div>
+    </header>
+    <main id="main" class="admin-wrap admin-main" tabindex="-1">
+      <slot />
+    </main>
+  </body>
+</html>

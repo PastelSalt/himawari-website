@@ -1,0 +1,95 @@
+---
+/** /admin: the news, newest first, and what was done lately. */
+import { desc } from 'drizzle-orm';
+import Admin from '../../layouts/Admin.astro';
+import * as schema from '../../server/db/schema';
+import { listPosts } from '../../server/news';
+import { REBUILD_NOTE, requireAdmin, when } from '../../server/admin';
+
+export const prerender = false;
+
+const ctx = await requireAdmin(Astro);
+if (ctx instanceof Response) return ctx;
+const { db, session } = ctx;
+const posts = await listPosts(db);
+const activity = await db.select().from(schema.activityLog).orderBy(desc(schema.activityLog.at)).limit(10);
+
+const q = Astro.url.searchParams;
+const DONE: Record<string, string> = {
+  password: 'Your password is set. The temporary one no longer works.',
+  saved: 'Draft saved.',
+  published: 'Published.',
+  unpublished: 'Moved back to drafts. It’s off the site after the rebuild.',
+  deleted: 'Deleted.',
+};
+const done = DONE[q.get('done') ?? ''];
+const rebuild = REBUILD_NOTE[(q.get('rebuild') ?? '') as keyof typeof REBUILD_NOTE];
+const ACTIONS: Record<string, string> = {
+  'account.created_from_env': 'Account created from the temporary password',
+  'auth.login': 'Signed in',
+  'auth.password_change': 'Changed the password',
+  'news.publish': 'Published',
+  'news.save_draft': 'Saved a draft of',
+  'news.delete': 'Deleted',
+};
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<Admin title="News" username={session.user.username}>
+  {done && (
+    <p class="notice notice--ok" role="status">
+      {done} {rebuild}
+    </p>
+  )}
+  <div class="admin-head">
+    <h1>News</h1>
+    <a class="btn btn--primary plain" href="/admin/news/new">
+      New post
+    </a>
+  </div>
+  <p class="hint">
+    Published posts show on the home page, the news pages, and the news bar, in each language they have.
+    Saving a published post rebuilds the site.
+  </p>
+
+  {posts.length ? (
+    <table class="posts">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Date</th>
+          <th scope="col">Languages</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {posts.map((p) => (
+          <tr>
+            <td>
+              <a href={`/admin/news/${p.id}`}>{p.titleEn}</a>
+            </td>
+            <td>{p.postedOn}</td>
+            <td>{p.titleJa ? 'EN, JA' : 'EN'}</td>
+            <td>
+              <span class:list={['status', `status--${p.status}`]}>
+                {p.status === 'published' ? 'Published' : 'Draft'}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p class="notice">No posts yet.</p>
+  )}
+
+  <h2>Recently</h2>
+  <ul class="activity" role="list">
+    {activity.map((a) => (
+      <li>
+        {when(a.at)}: {ACTIONS[a.action] ?? a.action}
+        {(a.details as { slug?: string }).slug && <> “{(a.details as { slug?: string }).slug}”</>}
+      </li>
+    ))}
+  </ul>
+</Admin>

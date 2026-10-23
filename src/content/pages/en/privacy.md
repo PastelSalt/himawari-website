@@ -1,8 +1,8 @@
 ---
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 
-**In short: this website sets no cookies, loads nothing from other sites, and counts visits without knowing who you are. Himawari itself sends nothing anywhere.**
+**In short: this website gives visitors no cookies, loads nothing from other sites, and counts visits without knowing who you are. Himawari itself sends nothing anywhere.**
 
 ## This website
 
@@ -24,7 +24,7 @@ Single page views are deleted after 90 days. After that we keep only the daily t
 
 ### What we don't do
 
-- **No cookies.** The site never sets one.
+- **No cookies for visitors.** The only cookie the site sets is the sign-in cookie of its admin panel, which Moeko Works uses to post news. Visitors never get it.
 - **No trackers, ads, or analytics services.** Fonts, images, and scripts all come from this site. Nothing loads from anywhere else.
 - **Your Motion choice stays in your browser.** The switch saves `on` or `off` in your browser's local storage (`hws:prefs`). It's never sent to us.
 

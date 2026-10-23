@@ -11,7 +11,7 @@ export type Post = CollectionEntry<'news'>['data'] & {
 export function newsPosts(all: CollectionEntry<'news'>[], lang: Lang): Post[] {
   return all
     .filter((p) => p.id.startsWith(`${lang}/`))
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || (b.data.seq ?? 0) - (a.data.seq ?? 0))
     .map((p) => {
       const slug = p.id.slice(lang.length + 1);
       return { ...p.data, slug, href: path(`/news/${slug}`, lang), entry: p };

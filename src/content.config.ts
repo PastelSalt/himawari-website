@@ -1,10 +1,12 @@
-/** Content: news posts (one folder per language), the privacy and about pages, and the engine's released docs. */
+/** Content: news posts (from the database, or src/content/news offline), the privacy and about pages, and the engine's
+ * released docs. */
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { newsLoader } from './lib/news-loader';
 
 const news = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
+  loader: newsLoader(),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -13,6 +15,8 @@ const news = defineCollection({
     summary: z.string(),
     /** the release on GitHub, for release posts */
     link: z.url().optional(),
+    /** the database row, to order posts from the same day */
+    seq: z.number().optional(),
   }),
 });
 

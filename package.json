@@ -27,6 +27,7 @@
     "@astrojs/sitemap": "3.7.4",
     "@astrojs/vercel": "11.0.13",
     "@neondatabase/serverless": "1.2.0",
+    "@node-rs/argon2": "2.2.1",
     "@phosphor-icons/core": "2.1.1",
     "astro": "7.3.8",
     "budoux": "0.9.3",

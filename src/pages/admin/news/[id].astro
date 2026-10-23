@@ -1,0 +1,287 @@
+---
+/**
+ * /admin/news/new and /admin/news/<id>: write or edit a post in both languages. Publishing, editing a published
+ * post, moving it back to drafts, or deleting it rebuilds the site through the deploy hook.
+ */
+import { VERCEL_DEPLOY_HOOK_URL } from 'astro:env/server';
+import Admin from '../../../layouts/Admin.astro';
+import { requireAdmin } from '../../../server/admin';
+import { dayOf } from '../../../server/track';
+import {
+  deletePost,
+  getPost,
+  parseNewsForm,
+  savePost,
+  slugTaken,
+  triggerRebuild,
+  type NewsPost,
+} from '../../../server/news';
+
+export const prerender = false;
+
+const ctx = await requireAdmin(Astro);
+if (ctx instanceof Response) return ctx;
+const { db, session } = ctx;
+const username = session.user.username;
+
+const isNew = Astro.params.id === 'new';
+const id = isNew ? undefined : Number(Astro.params.id);
+const post: NewsPost | undefined = id ? await getPost(db, id) : undefined;
+if (!isNew && !post) return Astro.redirect('/admin');
+const wasPublished = post?.status === 'published';
+
+const FIELDS = [
+  'slug',
+  'postedOn',
+  'category',
+  'link',
+  'titleEn',
+  'summaryEn',
+  'bodyEn',
+  'titleJa',
+  'summaryJa',
+  'bodyJa',
+] as const;
+type Values = Record<(typeof FIELDS)[number], string>;
+let values: Values = {
+  slug: post?.slug ?? '',
+  postedOn: post?.postedOn ?? dayOf(new Date()),
+  category: post?.category ?? 'Announcement',
+  link: post?.link ?? '',
+  titleEn: post?.titleEn ?? '',
+  summaryEn: post?.summaryEn ?? '',
+  bodyEn: post?.bodyEn ?? '',
+  titleJa: post?.titleJa ?? '',
+  summaryJa: post?.summaryJa ?? '',
+  bodyJa: post?.bodyJa ?? '',
+};
+let errors: Record<string, string> = {};
+let deleteError = '';
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const intent = String(form.get('intent') ?? '');
+
+  if (intent === 'delete' && id) {
+    if (form.get('confirm') !== 'yes') deleteError = 'Tick the box to confirm.';
+    else {
+      await deletePost(db, username, id);
+      const rebuild = wasPublished ? await triggerRebuild(VERCEL_DEPLOY_HOOK_URL) : '';
+      return Astro.redirect(`/admin?done=deleted&rebuild=${rebuild}`);
+    }
+  } else if (intent === 'publish' || intent === 'draft') {
+    values = Object.fromEntries(FIELDS.map((k) => [k, String(form.get(k) ?? '')])) as Values;
+    const parsed = parseNewsForm(form);
+    if ('errors' in parsed) errors = parsed.errors;
+    else if (await slugTaken(db, parsed.data.slug, id))
+      errors = { slug: 'Another post already uses this address.' };
+    else {
+      const publish = intent === 'publish';
+      await savePost(db, username, parsed.data, publish, id);
+      const rebuild = publish || wasPublished ? await triggerRebuild(VERCEL_DEPLOY_HOOK_URL) : '';
+      const done = publish ? 'published' : wasPublished ? 'unpublished' : 'saved';
+      return Astro.redirect(`/admin?done=${done}&rebuild=${rebuild}`);
+    }
+  }
+  Astro.response.status = 422;
+}
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const err = (k: string) =>
+  errors[k] ? { 'aria-invalid': 'true' as const, 'aria-describedby': `err-${k}` } : {};
+const title = isNew ? 'New post' : values.titleEn || 'Edit post';
+---
+
+<Admin title={title} username={username}>
+  <h1>{title}</h1>
+  {Object.keys(errors).length > 0 && (
+    <p class="notice notice--error" role="alert">
+      Some fields need a look. They’re marked below.
+    </p>
+  )}
+  {post && (
+    <p class="hint">
+      {wasPublished ? (
+        <>
+          Published. It’s at <a href={`/news/${post.slug}`}>/news/{post.slug}</a>
+          {post.titleJa && (
+            <>
+              {' '}
+              and <a href={`/ja/news/${post.slug}`}>/ja/news/{post.slug}</a>
+            </>
+          )}
+          .
+        </>
+      ) : (
+        'A draft: only you can see it.'
+      )}
+    </p>
+  )}
+
+  <form class="form" method="post">
+    <div class="grid-3">
+      <label class="field">
+        <span>Address</span>
+        <input
+          name="slug"
+          required
+          maxlength="80"
+          pattern="[a-z0-9]+(-[a-z0-9]+)*"
+          value={values.slug}
+          {...err('slug')}
+        />
+        <small>
+          /news/<b>this-part</b>: lowercase letters, numbers, hyphens
+        </small>
+        {errors.slug && (
+          <span class="field-error" id="err-slug">
+            {errors.slug}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span>Date</span>
+        <input name="postedOn" type="date" required value={values.postedOn} {...err('postedOn')} />
+        {errors.postedOn && (
+          <span class="field-error" id="err-postedOn">
+            {errors.postedOn}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span>Category</span>
+        <select name="category">
+          <option value="Announcement" selected={values.category === 'Announcement'}>
+            Announcement
+          </option>
+          <option value="Release" selected={values.category === 'Release'}>
+            Release
+          </option>
+        </select>
+      </label>
+    </div>
+    <label class="field">
+      <span>Link (optional)</span>
+      <input
+        name="link"
+        type="url"
+        maxlength="300"
+        placeholder="https://…"
+        value={values.link}
+        {...err('link')}
+      />
+      <small>Shown under the post, e.g. the release on GitHub.</small>
+      {errors.link && (
+        <span class="field-error" id="err-link">
+          {errors.link}
+        </span>
+      )}
+    </label>
+
+    <fieldset class="lang-block">
+      <legend>ENGLISH</legend>
+      <label class="field">
+        <span>Title</span>
+        <input name="titleEn" required maxlength="140" value={values.titleEn} {...err('titleEn')} />
+        {errors.titleEn && (
+          <span class="field-error" id="err-titleEn">
+            {errors.titleEn}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span>Summary</span>
+        <textarea
+          class="short"
+          name="summaryEn"
+          required
+          maxlength="200"
+          {...err('summaryEn')}
+        >{values.summaryEn}</textarea>
+        <small>One line, for the news bar and the news list.</small>
+        {errors.summaryEn && (
+          <span class="field-error" id="err-summaryEn">
+            {errors.summaryEn}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span>Text</span>
+        <textarea name="bodyEn" required {...err('bodyEn')}>{values.bodyEn}</textarea>
+        <small>Markdown: a blank line between paragraphs, **bold**, [a link](https://…), - for a list.</small>
+        {errors.bodyEn && (
+          <span class="field-error" id="err-bodyEn">
+            {errors.bodyEn}
+          </span>
+        )}
+      </label>
+    </fieldset>
+
+    <fieldset class="lang-block" lang="ja">
+      <legend lang="en">JAPANESE (OPTIONAL)</legend>
+      <label class="field">
+        <span lang="en">Title</span>
+        <input name="titleJa" maxlength="140" value={values.titleJa} {...err('titleJa')} />
+        {errors.titleJa && (
+          <span class="field-error" id="err-titleJa" lang="en">
+            {errors.titleJa}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span lang="en">Summary</span>
+        <textarea
+          class="short"
+          name="summaryJa"
+          maxlength="200"
+          {...err('summaryJa')}
+        >{values.summaryJa}</textarea>
+        {errors.summaryJa && (
+          <span class="field-error" id="err-summaryJa" lang="en">
+            {errors.summaryJa}
+          </span>
+        )}
+      </label>
+      <label class="field">
+        <span lang="en">Text</span>
+        <textarea name="bodyJa" {...err('bodyJa')}>{values.bodyJa}</textarea>
+        <small lang="en">Leave all three empty to post in English only.</small>
+        {errors.bodyJa && (
+          <span class="field-error" id="err-bodyJa" lang="en">
+            {errors.bodyJa}
+          </span>
+        )}
+      </label>
+    </fieldset>
+
+    <div class="actions">
+      <button class="btn btn--primary" type="submit" name="intent" value="publish">
+        {wasPublished ? 'Save and update the site' : 'Publish'}
+      </button>
+      <button class="btn btn--plain" type="submit" name="intent" value="draft">
+        {wasPublished ? 'Move back to drafts' : 'Save draft'}
+      </button>
+      <a href="/admin">Cancel</a>
+    </div>
+  </form>
+
+  {post && (
+    <form class="form danger" method="post">
+      <h2>Delete this post</h2>
+      <p class="hint">This can’t be undone.{wasPublished && ' It comes off the site after the rebuild.'}</p>
+      {deleteError && (
+        <p class="field-error" role="alert">
+          {deleteError}
+        </p>
+      )}
+      <label class="check">
+        <input type="checkbox" name="confirm" value="yes" /> Yes, delete “{post.titleEn}”
+      </label>
+      <div class="actions">
+        <button class="btn btn--plain" type="submit" name="intent" value="delete">
+          Delete
+        </button>
+      </div>
+    </form>
+  )}
+</Admin>

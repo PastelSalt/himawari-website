@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 
 Himawari is a free, open-source visual novel engine and editor for Windows, made by [Moeko Works](https://moekoworks.vercel.app/) (on GitHub, [PastelSalt](https://github.com/PastelSalt)).
@@ -35,4 +35,4 @@ The Himawari and Moeko Works names and logos belong to Moeko Works and aren't co
 
 ## This website
 
-This site follows the same rules as the software: no cookies, nothing loaded from other sites, and visits counted without knowing who you are. See [Privacy](/privacy).
+This site follows the same rules as the software: no cookies for visitors, nothing loaded from other sites, and visits counted without knowing who you are. See [Privacy](/privacy).

@@ -317,7 +317,7 @@ export const ja: Copy = {
     privacy: {
       title: 'プライバシー',
       description:
-        'このサイトが Cookie を使わずに何をどう数えているか。そして Himawari 自体は何も送信しないこと。',
+        'このサイトが訪問者に Cookie を使わずに何をどう数えているか。そして Himawari 自体は何も送信しないこと。',
     },
     about: {
       title: 'Himawari について',

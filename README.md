@@ -39,22 +39,35 @@ npm run build
 | `npm run og`          | Remakes the share images and icons in `public/`; commit what it writes                                                                                                         |
 | `npm run db:generate` | Writes a migration after a change to `src/server/db/schema.ts`                                                                                                                 |
 
+## The admin panel
+
+`/admin` is where the news is written, in English and Japanese, as on the Kotoha fan site.
+
+- **First sign-in:** set `ADMIN_USERNAME` and `ADMIN_TEMP_PASSWORD` in Vercel. The first sign-in with them creates the owner account and asks for a new password. After that they're ignored, and you can delete them.
+- **Publishing:** the pages stay static. Publishing, editing a published post, moving it back to drafts, or deleting it calls `VERCEL_DEPLOY_HOOK_URL` (a deploy hook for `main`). The site rebuilds with the news from the database, and the change is live in about two minutes.
+- **Offline:** without a database (local builds, CI), the news comes from the Markdown files in `src/content/news`.
+- **Safety:**
+  - passwords are hashed with Argon2id and checked against known breaches;
+  - sessions are stored as hashes behind a `__Host-` cookie and end after 2 idle hours or 7 days;
+  - 5 wrong passwords lock the account for 15 minutes;
+  - everything done is logged.
+
 ## Where things are
 
-| Path                     | What's there                                                                           |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| `src/pages/`             | Pages; `ja/` holds the Japanese ones. `api/` is the visit counter and the daily cron   |
-| `src/components/home/`   | The home page's sections                                                               |
-| `src/components/pages/`  | Download, news, privacy, about, and docs pages, shared by both languages               |
-| `src/components/chrome/` | Header, navigation, news bar, footer, and the icon sprite                              |
-| `src/components/ui/`     | Buttons, window frames, pill titles, flowers, icons                                    |
-| `src/i18n/`              | The words, one file per language                                                       |
-| `src/content/`           | News posts and the privacy and about pages in Markdown; `docs/` is copied by the build |
-| `src/scripts/`           | The Motion switch, the typing hero, reveals, confetti, and the visit count             |
-| `src/server/`            | The database schema, the cookieless counter, rate limits, and the daily housekeeping   |
-| `src/styles/`            | Tokens, base, components, sections, and motion                                         |
-| `db/migrations/`         | Database migrations (Drizzle)                                                          |
-| `scripts/`               | The release reader, the migrations runner, the share images, and the checks            |
+| Path                     | What's there                                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `src/pages/`             | Pages; `ja/` holds the Japanese ones, `admin/` the admin panel. `api/` is the visit counter and the daily cron           |
+| `src/components/home/`   | The home page's sections                                                                                                 |
+| `src/components/pages/`  | Download, news, privacy, about, and docs pages, shared by both languages                                                 |
+| `src/components/chrome/` | Header, navigation, news bar, footer, and the icon sprite                                                                |
+| `src/components/ui/`     | Buttons, window frames, pill titles, flowers, icons                                                                      |
+| `src/i18n/`              | The words, one file per language                                                                                         |
+| `src/content/`           | The privacy and about pages, and offline copies of the news, in Markdown; `docs/` is copied by the build                 |
+| `src/scripts/`           | The Motion switch, the typing hero, reveals, confetti, and the visit count                                               |
+| `src/server/`            | The database schema, the cookieless counter, rate limits, the daily housekeeping, and the admin panel's sign-in and news |
+| `src/styles/`            | Tokens, base, components, sections, and motion                                                                           |
+| `db/migrations/`         | Database migrations (Drizzle)                                                                                            |
+| `scripts/`               | The release reader, the migrations runner, the share images, and the checks                                              |
 
 Work on `dev`; `main` deploys production. Secrets live only in Vercel and `.env.local` (see `.env.example`).
 

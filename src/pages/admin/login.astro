@@ -1,0 +1,77 @@
+---
+/** /admin/login: sign in. The first sign-in uses ADMIN_USERNAME / ADMIN_TEMP_PASSWORD (src/server/auth.ts). */
+import Admin from '../../layouts/Admin.astro';
+import { ADMIN_TEMP_PASSWORD, ADMIN_USERNAME } from 'astro:env/server';
+import { getSession, login } from '../../server/auth';
+import { clientIp, databaseReady, sessionToken, setSessionCookie } from '../../server/admin';
+import { db } from '../../server/db/http';
+
+export const prerender = false;
+
+let error = '';
+let username = '';
+const ready = databaseReady();
+
+if (ready && Astro.request.method === 'GET' && (await getSession(db(), sessionToken(Astro))))
+  return Astro.redirect('/admin');
+
+if (ready && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  username = String(form.get('username') ?? '').slice(0, 64);
+  const result = await login(db(), {
+    username,
+    password: String(form.get('password') ?? ''),
+    ip: clientIp(Astro.request),
+    bootstrap: { username: ADMIN_USERNAME, tempPassword: ADMIN_TEMP_PASSWORD },
+  });
+  if (result.ok) {
+    setSessionCookie(Astro, result.token);
+    return Astro.redirect(result.user.mustChangePassword ? '/admin/password' : '/admin');
+  }
+  Astro.response.status = result.error === 'too_many' ? 429 : 401;
+  error =
+    result.error === 'too_many'
+      ? 'Too many attempts. Please wait 15 minutes and try again.'
+      : 'Incorrect username or password.';
+}
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<Admin title="Sign in">
+  <div class="admin-narrow">
+    <h1>Sign in</h1>
+    {!ready && (
+      <p class="notice notice--error" role="alert">
+        The database isn’t connected yet. Add the Neon integration in Vercel, then sign in here.
+      </p>
+    )}
+    {error && (
+      <p class="notice notice--error" role="alert">
+        {error}
+      </p>
+    )}
+    <form class="form" method="post">
+      <label class="field">
+        <span>Username</span>
+        <input
+          name="username"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          required
+          maxlength="64"
+          value={username}
+        />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input name="password" type="password" autocomplete="current-password" required maxlength="128" />
+      </label>
+      <div class="actions">
+        <button class="btn btn--primary" type="submit" disabled={!ready}>
+          Sign in
+        </button>
+      </div>
+    </form>
+  </div>
+</Admin>

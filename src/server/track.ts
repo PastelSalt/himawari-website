@@ -121,8 +121,8 @@ export async function recordPageView(db: DB, view: PageView, ctx: RequestContext
 
 /**
  * The daily cron: rolls the last three Manila days of production views into daily totals (idempotent, so late or
- * repeated runs are fine), then deletes single views after 90 days, salts after 2 days, and rate-limit rows after
- * 2 days.
+ * repeated runs are fine), then deletes single views after 90 days, salts after 2 days, rate-limit rows after
+ * 2 days, admin sign-in attempts after 30 days, and ended admin sessions after a week.
  */
 export async function dailyHousekeeping(db: DB, now = new Date()) {
   const days = [1, 2, 3].map((i) => dayOf(new Date(now.getTime() - i * 86_400_000)));
@@ -147,6 +147,15 @@ export async function dailyHousekeeping(db: DB, now = new Date()) {
   await db
     .delete(schema.rateLimits)
     .where(sql`${schema.rateLimits.windowStart} < ${cutoff(2).toISOString()}`);
+  // the admin panel: sign-in attempts after 30 days, sessions a week after they ended
+  await db
+    .delete(schema.loginAttempts)
+    .where(sql`${schema.loginAttempts.attemptedAt} < ${cutoff(30).toISOString()}`);
+  await db
+    .delete(schema.adminSessions)
+    .where(
+      sql`${schema.adminSessions.expiresAt} < ${cutoff(7).toISOString()} or ${schema.adminSessions.revokedAt} < ${cutoff(7).toISOString()}`,
+    );
   return { rolledUp: days };
 }
 

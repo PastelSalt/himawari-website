@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 
 Himawari は、Windows で使える無料・オープンソースのビジュアルノベルエンジンとエディタです。[Moeko Works](https://moekoworks.vercel.app/)（GitHub では [PastelSalt](https://github.com/PastelSalt)）が作っています。
@@ -35,4 +35,4 @@ Himawari と Moeko Works の名前とロゴは Moeko Works に帰属し、オー
 
 ## このサイトについて
 
-このサイトもソフトウェアと同じ方針です。Cookie を使わず、ほかのサイトから何も読み込まず、あなたがだれかを知らないまま訪問を数えています。詳しくは[プライバシー](/ja/privacy)をご覧ください。
+このサイトもソフトウェアと同じ方針です。訪問者に Cookie を使わず、ほかのサイトから何も読み込まず、あなたがだれかを知らないまま訪問を数えています。詳しくは[プライバシー](/ja/privacy)をご覧ください。
