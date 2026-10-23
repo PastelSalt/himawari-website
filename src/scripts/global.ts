@@ -47,6 +47,43 @@ const menu = document.getElementById('menu');
 for (const a of document.querySelectorAll('[data-menu-link]'))
   a.addEventListener('click', () => menu?.hidePopover?.());
 
+// ---- the panels under the navigation (NavPanel.astro): CSS opens them on hover and focus. Escape closes the one
+// that's open (content shown on hover must be dismissible, WCAG 1.4.13), and so does choosing a link in it. It can
+// open again once the pointer or focus has left.
+const items = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-item]'));
+const dismiss = (item: HTMLElement, refocus: boolean) => {
+  item.classList.add('is-dismissed');
+  if (refocus && item.contains(document.activeElement))
+    item.querySelector<HTMLElement>('.nav__link')?.focus();
+};
+for (const item of items) {
+  const reset = () => item.classList.remove('is-dismissed');
+  item.addEventListener('pointerleave', reset);
+  item.addEventListener('focusout', (e) => {
+    if (!item.contains(e.relatedTarget as Node | null)) reset();
+  });
+  for (const a of item.querySelectorAll('[data-panel-link]'))
+    a.addEventListener('click', () => {
+      dismiss(item, false);
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  // the one keyboard focus is in, else the one under the pointer
+  const open =
+    items.find((i) => i.contains(document.activeElement)) ?? items.find((i) => i.matches(':hover'));
+  if (open) dismiss(open, true);
+});
+
+// ---- a link to one question (#faq-3) opens it
+const openAsked = () => {
+  const el = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+  if (el instanceof HTMLDetailsElement) el.open = true;
+};
+openAsked();
+window.addEventListener('hashchange', openAsked);
+
 // ---- Zen Maru Gothic: loaded without blocking the first paint
 for (const l of document.querySelectorAll<HTMLLinkElement>('link[data-jp-fonts]')) l.media = 'all';
 

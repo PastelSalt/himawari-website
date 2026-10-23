@@ -46,6 +46,15 @@ export const en = {
       madeBy: 'Made by Moeko Works',
     },
     english: '(in English)',
+    /** the panels under the navigation (NavPanel.astro) */
+    panels: {
+      download: 'Download',
+      learn: 'Learn',
+      news: 'Latest news',
+      faq: 'Questions people ask',
+      allQuestions: 'All questions',
+      system: 'Windows 10 and 11, 64-bit. Free.',
+    },
   },
   hero: {
     /** html */

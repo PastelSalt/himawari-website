@@ -1,5 +1,8 @@
 ---
-/** The README's questions, as native <details>: no script, and they open with the keyboard. */
+/**
+ * The README's questions, as native <details>: no script, and they open with the keyboard. Each has an address
+ * (#faq-1 …) that the navigation's FAQ panel links to; global.ts opens the one asked for.
+ */
 import Icon from '../ui/Icon.astro';
 import SectionTitle from '../ui/SectionTitle.astro';
 import { copyFor } from '../../i18n';
@@ -11,8 +14,8 @@ const f = copyFor(langOf(Astro.url)).faq;
 <section class="sec" id="faq" aria-labelledby="t-faq">
   <SectionTitle id="t-faq" text={f.title} label={f.label} />
   <div class="faq">
-    {f.items.map((it) => (
-      <details class="faq__item">
+    {f.items.map((it, i) => (
+      <details class="faq__item" id={`faq-${i + 1}`}>
         <summary>
           <span>{it.q}</span>
           <Icon name="caret-down" class="faq__caret" />

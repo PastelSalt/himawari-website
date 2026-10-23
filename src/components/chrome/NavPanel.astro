@@ -1,0 +1,127 @@
+---
+/**
+ * A panel under a navigation link (Header.astro): the download, the five ways to learn, the latest news, or the
+ * questions. It opens on hover, or when keyboard focus reaches its link; Escape closes it (global.ts).
+ */
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import ReleaseMeta from '../ui/ReleaseMeta.astro';
+import { copyFor } from '../../i18n';
+import { postDate, type Post } from '../../lib/news';
+import { phrase } from '../../lib/phrase';
+import { RELEASE, RELEASES_URL, langOf, path } from '../../lib/site';
+
+interface Props {
+  id: 'download' | 'learn' | 'news' | 'faq';
+  /** a home-page anchor, from this page */
+  href: (id: string) => string;
+  posts: Post[];
+}
+const { id, href, posts } = Astro.props;
+const lang = langOf(Astro.url);
+const copy = copyFor(lang);
+const p = copy.chrome.panels;
+---
+
+<div class="nav-panel" id={`panel-${id}`}>
+  <div class:list={['nav-panel__inner', `nav-panel__inner--${id}`]}>
+    {id === 'download' && (
+      <>
+        <div class="nav-panel__lead">
+          <p class="nav-panel__title">Himawari Studio {RELEASE.version}</p>
+          <p class="nav-panel__text">{p.system}</p>
+          <div class="hero__dl">
+            <Button
+              href={RELEASE.installer.url}
+              icon="windows-logo"
+              data-confetti
+              aria-describedby="nav-dl-meta"
+            >
+              {copy.hero.download}
+            </Button>
+            <ReleaseMeta id="nav-dl-meta" />
+          </div>
+        </div>
+        <ul class="nav-panel__list" role="list">
+          <li>
+            <a href={path('/download', lang)} data-panel-link>
+              {copy.download.more}
+            </a>
+          </li>
+          <li>
+            <a href={href('download')} data-panel-link>
+              {copy.download.requirements.caption}
+            </a>
+          </li>
+          <li>
+            <a href={RELEASE.notesUrl} data-panel-link>
+              {copy.download.notes}
+            </a>
+          </li>
+          <li>
+            <a href={RELEASES_URL} data-panel-link>
+              {copy.download.all}
+            </a>
+          </li>
+        </ul>
+      </>
+    )}
+    {id === 'learn' && (
+      <ul class="nav-panel__cards" role="list">
+        {copy.learn.items.map((it) => (
+          <li>
+            <a class="nav-panel__card plain" href={it.href} data-panel-link>
+              <Icon name={it.icon} duo />
+              <span>
+                <b set:html={phrase(it.title, lang)} />
+                <small>{it.text}</small>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    {id === 'news' && (
+      <>
+        <ul class="nav-panel__news" role="list">
+          {posts.slice(0, 3).map((n) => (
+            <li>
+              <Icon name="newspaper" duo />
+              <span>
+                <a href={n.href} data-panel-link>
+                  {n.title}
+                </a>
+                <small>
+                  <time datetime={n.date.toISOString()}>{postDate(n.date, lang)}</time>
+                </small>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p class="nav-panel__more">
+          <a href={path('/news', lang)} data-panel-link>
+            {copy.news.all}
+          </a>
+        </p>
+      </>
+    )}
+    {id === 'faq' && (
+      <>
+        <ul class="nav-panel__qs" role="list">
+          {copy.faq.items.map((q, i) => (
+            <li>
+              <a href={href(`faq-${i + 1}`)} data-panel-link>
+                {q.q}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="nav-panel__more">
+          <a href={href('faq')} data-panel-link>
+            {p.allQuestions}
+          </a>
+        </p>
+      </>
+    )}
+  </div>
+</div>

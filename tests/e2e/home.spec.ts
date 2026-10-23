@@ -83,3 +83,37 @@ test.describe('motion', () => {
     );
   });
 });
+
+test.describe('navigation panels', () => {
+  test.skip(({ isMobile }) => isMobile, 'phones use the menu button');
+
+  test('open on hover and on keyboard focus, and Escape closes them', async ({ page, errors }) => {
+    void errors;
+    await page.goto('/?still');
+    const panel = page.locator('#panel-learn');
+    await expect(panel).toBeHidden();
+    await page.getByRole('link', { name: 'LEARN', exact: true }).hover();
+    await expect(panel).toBeVisible();
+    await expect(panel.getByRole('link')).toHaveCount(5);
+    await page.mouse.move(10, 600);
+    await expect(panel).toBeHidden();
+
+    await page.getByRole('link', { name: 'FAQ', exact: true }).focus();
+    await expect(page.locator('#panel-faq')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#panel-faq')).toBeHidden();
+    await expect(page.getByRole('link', { name: 'FAQ', exact: true })).toBeFocused();
+  });
+
+  test('a question in the FAQ panel opens that question', async ({ page, errors }) => {
+    void errors;
+    await page.goto('/download?still');
+    await page.getByRole('link', { name: 'FAQ', exact: true }).hover();
+    await page
+      .locator('#panel-faq')
+      .getByRole('link', { name: /Do I have to use AI/ })
+      .click();
+    await expect(page).toHaveURL(/\/#faq-4$/);
+    await expect(page.locator('#faq-4')).toHaveAttribute('open', '');
+  });
+});

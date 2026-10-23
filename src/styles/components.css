@@ -107,7 +107,7 @@
   gap: 26px;
   margin-left: auto;
 }
-.nav__links a {
+.nav__link {
   position: relative;
   display: inline-block;
   font-size: var(--step--1);
@@ -115,7 +115,7 @@
   letter-spacing: var(--tracking-label);
   color: var(--gray-600);
 }
-.nav__links a::after {
+.nav__link::after {
   content: '';
   position: absolute;
   left: 0;
@@ -127,11 +127,11 @@
   transform: scaleX(0);
   transition: transform var(--dur-2);
 }
-.nav__links a:hover {
+.nav__link:hover {
   color: var(--ink);
 }
-.nav__links a:hover::after,
-.nav__links a:focus-visible::after {
+.nav__link:hover::after,
+.nav__link:focus-visible::after {
   transform: scaleX(1);
 }
 
@@ -511,5 +511,176 @@
   }
   .foot__links {
     justify-content: flex-start;
+  }
+}
+
+/* ---------- panels under the navigation (NavPanel.astro) ----------
+   A panel opens on hover (fine pointers only) or when keyboard focus reaches its link, and closes on Escape
+   (global.ts adds .is-dismissed). Each item fills the bar's height so the pointer never crosses a gap into its
+   panel. Phones use the menu button instead. */
+.nav__row {
+  position: relative;
+}
+.nav__links {
+  align-self: stretch;
+}
+.nav__item {
+  display: flex;
+  align-items: center;
+}
+.nav-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: var(--z-menu);
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 -6px;
+  transition:
+    opacity var(--dur-2),
+    translate var(--dur-2),
+    visibility 0s linear var(--dur-2);
+}
+@media (hover: hover) {
+  .nav__item--panel:hover > .nav-panel {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+}
+.nav__item--panel:focus-within > .nav-panel {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: 0s;
+}
+.nav__item--panel.is-dismissed > .nav-panel {
+  visibility: hidden;
+  opacity: 0;
+}
+/* the open item keeps its underline */
+.nav__item--panel:is(:hover, :focus-within):not(.is-dismissed) > .nav__link {
+  color: var(--ink);
+}
+.nav__item--panel:is(:hover, :focus-within):not(.is-dismissed) > .nav__link::after {
+  transform: scaleX(1);
+}
+.nav-panel__inner {
+  margin-top: 2px;
+  padding: 24px 26px;
+  border: var(--bw-thin) solid var(--line-strong);
+  border-radius: var(--r-card);
+  background: var(--white);
+  box-shadow: 6px 8px 0 var(--sun);
+  letter-spacing: 0.02em;
+  font-size: 15px;
+}
+.nav-panel a {
+  background-size: 100% 0.3em;
+}
+.nav-panel a:hover {
+  background-size: 100% 92%;
+}
+.nav-panel__title {
+  font-size: var(--step-2);
+  font-weight: 600;
+  color: var(--ink);
+}
+.nav-panel__text {
+  margin: 2px 0 16px;
+  color: var(--gray-600);
+}
+.nav-panel__inner--download {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+.nav-panel__list,
+.nav-panel__qs {
+  display: grid;
+  gap: 10px;
+}
+.nav-panel__list li::before,
+.nav-panel__qs li::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--sun-deep);
+  vertical-align: 2px;
+}
+.nav-panel__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.nav-panel__card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  height: 100%;
+  padding: 14px;
+  border: var(--bw-hair) solid var(--line);
+  border-radius: 14px;
+  transition:
+    border-color var(--dur-1),
+    background-color var(--dur-1);
+}
+.nav-panel__card:hover,
+.nav-panel__card:focus-visible {
+  border-color: var(--black);
+  background: var(--sun-wash);
+}
+.nav-panel__card .icon {
+  flex: none;
+  font-size: 28px;
+}
+.nav-panel__card b {
+  display: block;
+  color: var(--ink);
+}
+.nav-panel__card small {
+  display: block;
+  margin-top: 2px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--gray-600);
+}
+.nav-panel__news {
+  display: grid;
+  gap: 14px;
+}
+.nav-panel__news li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.nav-panel__news .icon {
+  flex: none;
+  font-size: 26px;
+}
+.nav-panel__news small {
+  display: block;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.nav-panel__qs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 28px;
+}
+.nav-panel__more {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: var(--bw-hair) solid var(--line);
+  font-weight: 500;
+}
+@media (max-width: 760px) {
+  .nav-panel {
+    display: none;
   }
 }

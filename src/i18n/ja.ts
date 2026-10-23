@@ -44,6 +44,14 @@ export const ja: Copy = {
       madeBy: 'Moeko Works 制作',
     },
     english: '（英語）',
+    panels: {
+      download: 'ダウンロード',
+      learn: '学ぶ',
+      news: '最新のお知らせ',
+      faq: 'よくある質問',
+      allQuestions: 'すべての質問',
+      system: 'Windows 10・11（64 ビット）。無料です。',
+    },
   },
   hero: {
     title: '物語を書いたそばから、<mark>ゲームで遊べる。</mark>',
