@@ -1,0 +1,100 @@
+---
+/**
+ * A bar chart drawn on the server (the admin runs no scripts). By default visitors are sunflower bars and page views a
+ * dark line above each bar; with `viewsOnly`, the bars are views. The numbers are also in a table below, for screen
+ * readers and exact values.
+ */
+interface Props {
+  title: string;
+  points: { key: string; views: number; visitors: number }[];
+  /** turns a point's key into its label, e.g. "2026-10-23" → "23 Oct" */
+  label: (key: string) => string;
+  viewsOnly?: boolean;
+}
+const { title, points, label, viewsOnly = false } = Astro.props;
+const W = 720;
+const H = 160;
+const barOf = (p: Props['points'][number]) => (viewsOnly ? p.views : p.visitors);
+const max = Math.max(1, ...points.map((p) => Math.max(p.views, barOf(p))));
+const step = W / points.length;
+const bar = Math.max(2, step * 0.62);
+const y = (v: number) => H - (v / max) * (H - 8);
+const totalViews = points.reduce((s, p) => s + p.views, 0);
+const totalVisitors = points.reduce((s, p) => s + p.visitors, 0);
+const summary = viewsOnly
+  ? `${totalViews.toLocaleString('en')} views`
+  : `${totalVisitors.toLocaleString('en')} visitors · ${totalViews.toLocaleString('en')} views`;
+// a few labels along the bottom, never crowded
+const every = Math.ceil(points.length / 6);
+---
+
+<figure class="chart">
+  <figcaption>
+    <b>{title}</b>
+    <span>{summary}</span>
+  </figcaption>
+  {!viewsOnly && (
+    <p class="chart__key" aria-hidden="true">
+      <span class="chart__key-bar" /> visitors <span class="chart__key-line" /> views
+    </p>
+  )}
+  <svg
+    viewBox={`0 0 ${W} ${H + 22}`}
+    role="img"
+    aria-label={`${title}: ${summary}. The numbers are in the table below.`}
+  >
+    <line x1="0" x2={W} y1={H} y2={H} class="chart__axis"></line>
+    {points.map((p, i) => (
+      <g>
+        <title>
+            {viewsOnly
+              ? `${label(p.key)}: ${p.views} views`
+              : `${label(p.key)}: ${p.visitors} visitors, ${p.views} views`}
+          </title>
+        <rect
+          class="chart__bar"
+          x={i * step + (step - bar) / 2}
+          y={y(barOf(p))}
+          width={bar}
+          height={H - y(barOf(p))}
+          rx="2"
+        />
+        {!viewsOnly && p.views > 0 && (
+          <rect
+            class="chart__tick"
+            x={i * step + (step - bar) / 2}
+            y={y(p.views) - 1.5}
+            width={bar}
+            height="3"
+          />
+        )}
+        {i % every === 0 && (
+          <text class="chart__label" x={i * step + step / 2} y={H + 16} text-anchor="middle">
+            {label(p.key)}
+          </text>
+        )}
+      </g>
+    ))}
+  </svg>
+  <details>
+    <summary>Show the numbers</summary>
+    <table class="posts">
+      <thead>
+        <tr>
+          <th scope="col">When</th>
+          {!viewsOnly && <th scope="col">Visitors</th>}
+          <th scope="col">Views</th>
+        </tr>
+      </thead>
+      <tbody>
+        {points.map((p) => (
+          <tr>
+            <th scope="row">{label(p.key)}</th>
+            {!viewsOnly && <td>{p.visitors}</td>}
+            <td>{p.views}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </details>
+</figure>

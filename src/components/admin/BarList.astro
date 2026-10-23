@@ -1,0 +1,29 @@
+---
+/** A top-ten list with a bar behind each count, as on Kotoha's dashboard. */
+interface Props {
+  title: string;
+  items: { key: string; value: number }[];
+  /** how to show a key; empty keys get `empty` */
+  name?: (key: string) => string;
+  empty?: string;
+}
+const { title, items, name = (k: string) => k, empty = 'Unknown' } = Astro.props;
+const max = Math.max(1, ...items.map((i) => i.value));
+---
+
+<section class="barlist" aria-label={title}>
+  <h3>{title}</h3>
+  {items.length ? (
+    <ol role="list">
+      {items.map((i) => (
+        <li>
+          <span class="barlist__fill" style={`width:${(i.value / max) * 100}%`} aria-hidden="true" />
+          <span class="barlist__name">{i.key ? name(i.key) : empty}</span>
+          <span class="barlist__value">{i.value.toLocaleString('en')}</span>
+        </li>
+      ))}
+    </ol>
+  ) : (
+    <p class="hint">Nothing yet.</p>
+  )}
+</section>

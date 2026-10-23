@@ -1,0 +1,128 @@
+---
+/**
+ * /admin/stats: who visits and what they read, cookieless (src/server/track.ts), as on the Kotoha fan site. Visits
+ * per day, week, and month; breakdowns for 7, 30, or 88 days; and installer downloads from GitHub.
+ */
+import Admin from '../../layouts/Admin.astro';
+import BarChart from '../../components/admin/BarChart.astro';
+import BarList from '../../components/admin/BarList.astro';
+import { requireAdmin } from '../../server/admin';
+import { breakdowns, releaseDownloads, visitCharts } from '../../server/stats';
+
+export const prerender = false;
+
+const ctx = await requireAdmin(Astro);
+if (ctx instanceof Response) return ctx;
+const { db, session } = ctx;
+
+const RANGES = [7, 30, 88];
+const days = RANGES.includes(Number(Astro.url.searchParams.get('days')))
+  ? Number(Astro.url.searchParams.get('days'))
+  : 30;
+const [charts, b, downloads] = await Promise.all([visitCharts(db), breakdowns(db, days), releaseDownloads()]);
+const today = charts.daily.at(-1)!;
+
+const fmt = (opts: Intl.DateTimeFormatOptions) => (key: string) =>
+  new Date(`${key.length === 7 ? `${key}-01` : key}T00:00:00Z`).toLocaleDateString('en-GB', {
+    timeZone: 'UTC',
+    ...opts,
+  });
+const dayLabel = fmt({ day: 'numeric', month: 'short' });
+const monthLabel = fmt({ month: 'short', year: '2-digit' });
+const countries = new Intl.DisplayNames(['en'], { type: 'region' });
+const country = (code: string) => {
+  try {
+    return countries.of(code) ?? code;
+  } catch {
+    return code;
+  }
+};
+const LANG: Record<string, string> = { en: 'English pages', ja: 'Japanese pages' };
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const busiest = [...b.hours].sort((x, y) => y.value - x.value)[0];
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<Admin title="Statistics" username={session.user.username}>
+  <h1>Statistics</h1>
+  <p class="hint">
+    Counted without cookies and without storing anyone’s address (see the <a href="/privacy">privacy page</a>
+    ). Only the live site counts, crawlers and browsers that ask not to be tracked don’t, and days are in
+    Manila time. A visitor is counted once per day.
+  </p>
+
+  <div class="tiles">
+    <p>
+      <b>{today.visitors.toLocaleString('en')}</b> visitors today
+    </p>
+    <p>
+      <b>{today.views.toLocaleString('en')}</b> views today
+    </p>
+    <p>
+      <b>{b.visitors.toLocaleString('en')}</b> visitors, last {days} days
+    </p>
+    <p>
+      <b>{b.views.toLocaleString('en')}</b> views, last {days} days
+    </p>
+  </div>
+
+  <h2>Visits</h2>
+  <BarChart title="Last 30 days" points={charts.daily} label={dayLabel} />
+  <BarChart title="Last 12 weeks, from Monday" points={charts.weekly} label={dayLabel} />
+  <BarChart title="Last 12 months" points={charts.monthly} label={monthLabel} />
+
+  <div class="admin-head">
+    <h2>What people read</h2>
+    <p class="ranges" aria-label="Range">
+      {RANGES.map((d) => (
+        <a href={`/admin/stats?days=${d}`} aria-current={d === days ? 'page' : undefined}>
+          {d} days
+        </a>
+      ))}
+    </p>
+  </div>
+  <div class="barlists">
+    <BarList title="Pages" items={b.pages} />
+    <BarList title="Came from" items={b.sources} empty="Direct, or not shared" />
+    <BarList title="Countries" items={b.countries} name={country} />
+    <BarList title="Languages" items={b.languages} name={(k) => LANG[k] ?? k} />
+    <BarList title="Devices" items={b.devices} name={cap} />
+    <BarList title="Browsers" items={b.browsers} />
+  </div>
+  <BarChart
+    title={`Views by hour, Manila time${busiest && busiest.value ? ` (busiest: ${busiest.key}:00)` : ''}`}
+    points={b.hours.map((h) => ({ key: h.key, views: h.value, visitors: 0 }))}
+    viewsOnly
+    label={(k) => `${k}:00`}
+  />
+
+  <h2>Installer downloads</h2>
+  {downloads ? (
+    <table class="posts">
+      <thead>
+        <tr>
+          <th scope="col">Version</th>
+          <th scope="col">Released</th>
+          <th scope="col">Downloads</th>
+        </tr>
+      </thead>
+      <tbody>
+        {downloads.map((d) => (
+          <tr>
+            <th scope="row">{d.version}</th>
+            <td>
+              {dayLabel(d.publishedAt.slice(0, 10))} {d.publishedAt.slice(0, 4)}
+            </td>
+            <td>{d.downloads.toLocaleString('en')}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p class="notice">GitHub didn’t answer just now. Reload the page to try again.</p>
+  )}
+  <p class="hint">
+    From GitHub’s own counts for each installer. They include downloads from GitHub itself, not only this
+    site.
+  </p>
+</Admin>
