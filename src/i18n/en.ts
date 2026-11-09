@@ -43,7 +43,7 @@ export const en = {
         { label: 'GITHUB', href: REPO },
       ],
       legal: 'COPYRIGHT © MOEKO WORKS · RUNTIME ZLIB · TOOLS MIT',
-      madeBy: 'Made by Moeko Works',
+      madeBy: 'Made by Kyle Zoleta (Moeko Works)',
     },
     english: '(in English)',
     /** the panels under the navigation (NavPanel.astro) */

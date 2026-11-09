@@ -14,7 +14,7 @@ import News from './News.astro';
 import Faq from './Faq.astro';
 import { copyFor } from '../../i18n';
 import { newsPosts } from '../../lib/news';
-import { PORTFOLIO, RELEASE, REPO, SITE_NAME, type Lang } from '../../lib/site';
+import { type Lang } from '../../lib/site';
 
 interface Props {
   lang: Lang;
@@ -23,23 +23,8 @@ const { lang } = Astro.props;
 const copy = copyFor(lang);
 const posts = newsPosts(await getCollection('news'), lang);
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Himawari Studio',
-  description: copy.meta.description,
-  inLanguage: lang,
-  applicationCategory: 'DesignApplication',
-  operatingSystem: 'Windows 10, Windows 11',
-  softwareVersion: RELEASE.version,
-  datePublished: RELEASE.publishedAt.slice(0, 10),
-  downloadUrl: RELEASE.installer.url,
-  fileSize: `${Math.round(RELEASE.installer.bytes / 1024 / 1024)}MB`,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  license: `${REPO}#licenses`,
-  author: { '@type': 'Organization', name: PORTFOLIO.name, url: PORTFOLIO.url },
-  isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: Astro.site?.href },
-};
+// the page node; Base adds the WebSite, maker and app (Himawari Studio) nodes around it
+const jsonLd = { mainEntity: { '@id': `${new URL('/', Astro.site).href}#himawari-studio` } };
 ---
 
 <Base

@@ -5,6 +5,32 @@ export const SITE_NAME = 'Himawari';
 export const REPO = 'https://github.com/PastelSalt/himawari-c';
 export const CONTACT_URL = 'https://moekoworks.vercel.app/contact';
 export const PORTFOLIO = { name: 'Moeko Works', url: 'https://moekoworks.vercel.app' };
+/**
+ * The maker, for search engines. The @id is the one the Moeko Works portfolio publishes in its own JSON-LD, so
+ * this site, the portfolio and the fan sites all join to one creator. Keep them in step if the portfolio changes.
+ */
+export const AUTHOR = {
+  id: 'https://moekoworks.vercel.app/#person',
+  name: 'Kyle Zoleta',
+  brand: PORTFOLIO.name,
+  url: PORTFOLIO.url,
+  sameAs: ['https://github.com/PastelSalt', 'https://web.facebook.com/moemorimoeko/'],
+};
+/** Terms people search for Himawari by; used for meta keywords and the WebSite node. */
+export const KEYWORDS = [
+  'Himawari',
+  'Himawari Studio',
+  'visual novel engine',
+  'visual novel maker',
+  'free visual novel maker',
+  'open source visual novel engine',
+  'ノベルゲーム制作ツール',
+  'ビジュアルノベル エンジン',
+  'ノベルゲーム 作り方',
+  'Windows',
+  'Moeko Works',
+  'Kyle Zoleta',
+];
 
 export const RELEASE = release;
 export const RELEASES_URL = `${REPO}/releases`;

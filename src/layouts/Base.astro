@@ -13,7 +13,7 @@ import Sprite from '../components/chrome/Sprite.astro';
 import Header from '../components/chrome/Header.astro';
 import Footer from '../components/chrome/Footer.astro';
 import { copyFor } from '../i18n';
-import { SITE_NAME, type Lang } from '../lib/site';
+import { AUTHOR, KEYWORDS, RELEASE, REPO, SITE_NAME, type Lang } from '../lib/site';
 
 export interface Props {
   lang: Lang;
@@ -37,6 +37,74 @@ const {
 } = Astro.props;
 const copy = copyFor(lang);
 const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.site);
+const ogUrl = new URL(og, Astro.site);
+// One @graph per page: the site, its maker (same @id as the Moeko Works portfolio), the app, and this page.
+const siteUrl = new URL('/', Astro.site).href;
+const ids = { site: `${siteUrl}#website`, app: `${siteUrl}#himawari-studio`, author: AUTHOR.id };
+const ld = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': ids.site,
+      name: SITE_NAME,
+      alternateName: ['Himawari Studio', 'Himawari visual novel engine'],
+      url: siteUrl,
+      inLanguage: ['en', 'ja'],
+      keywords: KEYWORDS.join(', '),
+      about: { '@id': ids.app },
+      author: { '@id': ids.author },
+      creator: { '@id': ids.author },
+      publisher: { '@id': ids.author },
+    },
+    {
+      '@type': 'Person',
+      '@id': ids.author,
+      name: AUTHOR.name,
+      url: AUTHOR.url,
+      jobTitle: 'Web developer',
+      brand: { '@type': 'Brand', name: AUTHOR.brand },
+      sameAs: AUTHOR.sameAs,
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': ids.app,
+      name: 'Himawari Studio',
+      alternateName: 'Himawari',
+      description: copy.meta.description,
+      applicationCategory: 'DesignApplication',
+      applicationSubCategory: 'Visual novel engine',
+      operatingSystem: 'Windows 10, Windows 11',
+      softwareVersion: RELEASE.version,
+      datePublished: RELEASE.publishedAt.slice(0, 10),
+      downloadUrl: RELEASE.installer.url,
+      fileSize: `${Math.round(RELEASE.installer.bytes / 1024 / 1024)} MB`,
+      releaseNotes: RELEASE.notesUrl,
+      url: siteUrl,
+      image: ogUrl.href,
+      inLanguage: ['en', 'ja'],
+      isAccessibleForFree: true,
+      license: `${REPO}#licenses`,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      sameAs: [REPO],
+      author: { '@id': ids.author },
+      creator: { '@id': ids.author },
+      publisher: { '@id': ids.author },
+    },
+    {
+      '@type': 'WebPage',
+      name: title,
+      description,
+      url: canonical.href,
+      inLanguage: lang,
+      primaryImageOfPage: ogUrl.href,
+      ...jsonLd,
+      isPartOf: { '@id': ids.site },
+      about: { '@id': ids.app },
+      author: { '@id': ids.author },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -46,6 +114,9 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={`${AUTHOR.name} (${AUTHOR.brand})`} />
+    <meta name="keywords" content={KEYWORDS.join(', ')} />
+    <link rel="author" href={AUTHOR.url} />
     <link rel="canonical" href={canonical.href} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -61,9 +132,13 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:locale" content={lang === 'ja' ? 'ja_JP' : 'en_US'} />
-    <meta property="og:image" content={new URL(og, Astro.site).href} />
+    <meta property="og:image" content={ogUrl.href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Himawari Studio — free visual novel engine and editor for Windows"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
     <!-- Pre-paint Motion (WEBSITE.md §7.1): the saved choice, else prefers-reduced-motion. Its sha256 goes in the
@@ -84,7 +159,7 @@ const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.s
     <noscript>
       <link rel="stylesheet" href="/fonts/jp.css" />
     </noscript>
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
   </head>
   <body>
     <a class="skip-link plain" href="#main">

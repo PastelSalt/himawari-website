@@ -2,7 +2,7 @@
 updated: 2026-10-23
 ---
 
-Himawari は、Windows で使える無料・オープンソースのビジュアルノベルエンジンとエディタです。[Moeko Works](https://moekoworks.vercel.app/)（GitHub では [PastelSalt](https://github.com/PastelSalt)）が作っています。
+Himawari は、Windows で使える無料・オープンソースのビジュアルノベルエンジンとエディタです。Moeko Works の [Kyle Zoleta](https://moekoworks.vercel.app/)（GitHub では [PastelSalt](https://github.com/PastelSalt)）が作っています。
 
 大切にしているのは 3 つの約束です。**だれでも使えること、コードを書く人にもひらかれていること、どの Windows PC でも軽く動くこと。** Studio ではコードを書かずにすべての作業ができ、同じプロジェクトは、コードを書く人にとってはプレーンテキストのファイルです。完成したゲームは Windows 10・11 ならダブルクリックで起動し、何もインストールする必要がありません。AI 機能は任意で、Himawari が画像、音楽、音声、動画を生成することはありません。
 

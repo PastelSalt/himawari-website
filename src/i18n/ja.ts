@@ -41,7 +41,7 @@ export const ja: Copy = {
         { label: 'GITHUB', href: REPO },
       ],
       legal: 'COPYRIGHT © MOEKO WORKS · RUNTIME ZLIB · TOOLS MIT',
-      madeBy: 'Moeko Works 制作',
+      madeBy: 'Kyle Zoleta（Moeko Works）制作',
     },
     english: '（英語）',
     panels: {
